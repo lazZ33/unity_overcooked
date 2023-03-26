@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2688ff632987c314cb86eabb3f5fc076, type: 3}
+  m_Name: Table
+  m_EditorClassIdentifier: 
+  Mesh: {fileID: 4300000, guid: 547464eee0e5fe24ca1732740341a173, type: 2}
+  MeshCollider: {fileID: 4300000, guid: 547464eee0e5fe24ca1732740341a173, type: 2}
+  Material: {fileID: 2100000, guid: 1c46437e882e4c94795a67bf556442e6, type: 2}
+  selfProcess: 0
+  curPlaceable: []
+  curUsable: []
+  placeable: []
+  usable: []
