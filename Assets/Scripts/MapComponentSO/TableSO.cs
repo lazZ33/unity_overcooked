@@ -6,7 +6,4 @@ using Unity.Netcode;
 [CreateAssetMenu(fileName = "Table", menuName = "ScriptableObject/Table")]
 public class TableSO : HolderSO
 {
-    public override void RegisterObject(){
-        
-    }
 }

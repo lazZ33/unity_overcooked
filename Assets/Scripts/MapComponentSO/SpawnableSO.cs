@@ -9,7 +9,7 @@ public class SpawnableSO: InteractableSO{
     [SerializeField] public Sprite SpawnDisplay = null;
 
     public static SpawnableSO GetSO(String strKey){
-        SpawnableSO info = (SpawnableSO) Resources.Load("SpawnableSO/" + strKey);
+        SpawnableSO info = (SpawnableSO) Resources.Load("InteractableSO/Spawnable/" + strKey);
         if (info == null) Debug.LogError("SO resource failed to load, possibly corrupted filename or SO name list. Tried path: SpawnableSO/" + strKey);
         return info;
     }

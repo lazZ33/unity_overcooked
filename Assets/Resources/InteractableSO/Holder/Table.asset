@@ -12,11 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2688ff632987c314cb86eabb3f5fc076, type: 3}
   m_Name: Table
   m_EditorClassIdentifier: 
-  Mesh: {fileID: 4300000, guid: 547464eee0e5fe24ca1732740341a173, type: 2}
-  MeshCollider: {fileID: 4300000, guid: 547464eee0e5fe24ca1732740341a173, type: 2}
-  Material: {fileID: 2100000, guid: 1c46437e882e4c94795a67bf556442e6, type: 2}
-  selfProcess: 0
-  curPlaceable: []
-  curUsable: []
-  placeable: []
-  usable: []
+  _mesh: {fileID: 4493585093827132993, guid: 82f758fb753deaa4b96357dae9b2d9d8, type: 3}
+  _meshCollider: {fileID: 4493585093827132993, guid: 82f758fb753deaa4b96357dae9b2d9d8, type: 3}
+  _material: {fileID: 0}
+  _holdable: []

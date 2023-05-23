@@ -16,9 +16,6 @@ public abstract class GrabbableSO: InteractableSO{
     
     [SerializeField] public bool SelfUse = false;
     [SerializeField] private List<InteractableSO> _placeableTo = new List<InteractableSO>();
-    public List<InteractableSO> PlaceableTo => this._placeableTo;
-    // [SerializeField] private List<InteractableSO> _usableTo = new List<InteractableSO>();
-    // public List<InteractableSO> UsableTo => this._usableTo;
     public List<string> ContainedGrabbableNames { get; } = new List<string>();
     public List<string> RequiredUtilityNames { get; } = new List<string>();
     public List<string> StrKeyList { get{
@@ -29,7 +26,6 @@ public abstract class GrabbableSO: InteractableSO{
                         }
     // should be equal to filename after String.Concat() both name list
     private HashSet<InteractableSO> _existingPlaceableTo { get; } = new HashSet<InteractableSO>();
-    // public HashSet<InteractableSO> ExistingPlaceableTo => this._existingPlaceableTo;
 
     void OnEnable(){
         // update name of this SO
@@ -63,6 +59,10 @@ public abstract class GrabbableSO: InteractableSO{
         InteractableSO.ExistingInteractable.Add(this);
         GrabbableSO.NextGrabbableDict.Add(this.name, this);
 
+        this.UpdateRelationships();
+    }
+
+    public void UpdateRelationships(){
         // clear previous relationships
         this._existingPlaceableTo.Clear();
 
@@ -87,11 +87,11 @@ public abstract class GrabbableSO: InteractableSO{
                 switch (curExistingInteractableSO){
 
                     case GrabbableSO curExistingGrabbableSO:
-                        if (this._placeableTo.Contains(curExistingInteractableSO)){ do{
-                            this._existingPlaceableTo.Add(curExistingInteractableSO);
+                        if (curGrabbableSO._placeableTo.Contains(curExistingInteractableSO)){ do{
+                            curGrabbableSO._existingPlaceableTo.Add(curExistingInteractableSO);
 
                             // attempt to load SO for the possible combination
-                            string strKey = this.GetNewStrKey(this, curExistingGrabbableSO);
+                            string strKey = GrabbableSO.GetNewStrKey(curGrabbableSO, curExistingGrabbableSO);
                             GrabbableSO nextGrabbable = (GrabbableSO) Resources.Load("InteractableSO/Grabbable/" + strKey);
                             if (nextGrabbable == null){ Debug.LogError("SO resource failed to load, possibly corrupted filename or SO name list. Tried string key: " + strKey); break;} // break the inner do-while
                             
@@ -99,23 +99,23 @@ public abstract class GrabbableSO: InteractableSO{
                             newGrabbableList.Add(new Tuple<string, GrabbableSO>(strKey, nextGrabbable));
 
                             // // do the same for the curExistingGrabbableSO
-                            if (curExistingGrabbableSO._placeableTo.Contains(this)){
-                                curExistingGrabbableSO._existingPlaceableTo.Add(this);
+                            if (curExistingGrabbableSO._placeableTo.Contains(curGrabbableSO)){
+                                curExistingGrabbableSO._existingPlaceableTo.Add(curGrabbableSO);
                             }
                         } while(false); }
                         break;
 
                     case HolderSO curExistingHolderSO:
 
-                        if (!this._placeableTo.Contains(curExistingHolderSO)) continue;
-                        this._existingPlaceableTo.Add(curExistingHolderSO);
+                        if (!curGrabbableSO._placeableTo.Contains(curExistingHolderSO)) continue;
+                        curGrabbableSO._existingPlaceableTo.Add(curExistingHolderSO);
                             
                         switch (curExistingHolderSO){
 
-                            case UtilitySO curExistingUtilitySO:
+                            case StationeryUtilitySO curExistingUtilitySO:
                                 do{
                                 // attempt to load SO for the possible combination
-                                string strKey = this.GetNewStrKey(this, curExistingUtilitySO);
+                                string strKey = GrabbableSO.GetNewStrKey(curGrabbableSO, curExistingUtilitySO);
                                 GrabbableSO nextGrabbable = (GrabbableSO) Resources.Load("InteractableSO/Grabbable/" + strKey);
                                 if (nextGrabbable == null){ Debug.LogError("SO resource failed to load, possibly corrupted filename or SO name list. Tried string key: " + strKey); break;} // break the inner do-while
                                 
@@ -145,12 +145,18 @@ public abstract class GrabbableSO: InteractableSO{
         }
     }
 
-    private string GetNewStrKey(GrabbableSO SO1, GrabbableSO SO2){
+    public static void UpdateAllRelationships(){
+        foreach (GrabbableSO grabbableSO in NextGrabbableDict.Values){
+            grabbableSO.UpdateRelationships();
+        }
+    }
+
+    private static string GetNewStrKey(GrabbableSO SO1, GrabbableSO SO2){
         List<string> strKeyList = new List<string>(SO1.StrKeyList.Concat(SO2.StrKeyList));
         strKeyList.Sort();
         return String.Concat(strKeyList);
     }
-    private string GetNewStrKey(GrabbableSO SO1, UtilitySO SO2){
+    private static string GetNewStrKey(GrabbableSO SO1, StationeryUtilitySO SO2){
         List<string> strKeyList = SO1.StrKeyList;
         strKeyList.Add(SO2.name);
         strKeyList.Sort();

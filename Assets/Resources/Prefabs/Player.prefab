@@ -57,6 +57,7 @@ GameObject:
   - component: {fileID: 4460105299190670437}
   - component: {fileID: 3161097390720222937}
   - component: {fileID: 2468912163179614611}
+  - component: {fileID: -992647245823998146}
   - component: {fileID: -6961195662433087918}
   - component: {fileID: 6538340402481395486}
   - component: {fileID: -556130139352596146}
@@ -140,6 +141,19 @@ MonoBehaviour:
     m_Bits: 512
   _grabCollider: {fileID: 2289919462500397882}
   _grabPosition: {fileID: 243028905890958171}
+  _interactions: {fileID: -992647245823998146}
+--- !u!114 &-992647245823998146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4460105299198056003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8be7fcd1e5282404d8734e3b6fdd298c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &-6961195662433087918
 MonoBehaviour:
   m_ObjectHideFlags: 0

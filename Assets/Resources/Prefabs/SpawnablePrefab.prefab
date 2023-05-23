@@ -283,7 +283,7 @@ MonoBehaviour:
   _info: {fileID: 11400000, guid: cdd449418be13914f85fb12363dbb789, type: 2}
   _spawnningPoint: {fileID: 5032654918569437719}
   _client: {fileID: 3241943083451302339}
-  _mapComponent: {fileID: 11400000, guid: 32112c5f66e4d4143b064b94f4fc17ad, type: 2}
+  _ingredientPrefab: {fileID: 7062854213495437386, guid: 37edebb0ff73d534597437a1d25405c3, type: 3}
 --- !u!1 &5515009545993787787
 GameObject:
   m_ObjectHideFlags: 0
