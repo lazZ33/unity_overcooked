@@ -1,35 +1,26 @@
 using UnityEngine;
 using Unity.Netcode;
 using Unity.Collections;
+using System;
 
 public class ServerSpawnable : ServerInteractable {
-    // TODO: dynamically change _info according to generated map config, sync client's infoStrKey accordingly
-    public static readonly FixedString128Bytes INFO_STR_KEY_DEFAULT = "";
-    public NetworkVariable<FixedString128Bytes> InfoStrKey = new NetworkVariable<FixedString128Bytes>(ServerSpawnable.INFO_STR_KEY_DEFAULT, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-    [SerializeField] private SpawnableSO _info;
-    [SerializeField] private Transform _spawnningPoint = null;
-    [SerializeField] private ClientSpawnable _client;
-    [SerializeField] private GameObject _ingredientPrefab;
+    [SerializeField] private GameObject _CombinablePrefab;
 
-    protected override void Awake(){
-        base.Awake();
-        this.InfoStrKey.Value = this._info.name;
-        this._info.SpawnningSO.RegisterObject();
-    }
-    public override void OnNetworkSpawn(){
-        if (!this.IsServer) this.enabled = false;
-        this._info = (SpawnableSO) Resources.Load("InteractableSO/Spawnable" + InfoStrKey.Value);
-    }
+    [NonSerialized] public CombinableSO SpawnningCombinableInfo = null;
 
-    internal ServerGrabbable SpawnGrabbableServerInternal(){
+    private new ClientSpawnable _client => (ClientSpawnable)base._client;
+    public new SpawnableSO Info { get { return (SpawnableSO)base._info; } set { base._info = value; } }    
+
+
+    internal ServerCombinable SpawnCombinableServerInternal(){
         // spawn target object
-        GameObject newGrabbableObject = Instantiate(this._ingredientPrefab, this._spawnningPoint.position, this._spawnningPoint.rotation);
-        ServerGrabbable newGrabbable = newGrabbableObject.GetComponent<ServerGrabbable>();
-        newGrabbable.NetworkObjectBuf.Spawn(true);
-        newGrabbable.SetInfoServerRpc(new FixedString128Bytes(this._info.SpawnningSO.name));
+        GameObject newCombinableObject = Instantiate(this._CombinablePrefab, this.transform.TransformPoint(this.Info.LocalSpawnPoint), Quaternion.identity);
+        ServerCombinable newCombinableServer = newCombinableObject.GetComponent<ServerCombinable>();
+        newCombinableServer.NetworkObjectBuf.Spawn(true);
+        newCombinableServer.SetInfoServerInternal(this.SpawnningCombinableInfo.StrKey);
         print("spawned");
-        return newGrabbable;
+        return newCombinableServer;
     }
 
 }

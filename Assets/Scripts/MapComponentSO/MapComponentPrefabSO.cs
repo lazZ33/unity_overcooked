@@ -3,8 +3,8 @@ using Unity;
 
 [CreateAssetMenu(fileName = "MapComponentPrefabSO", menuName = "ScriptableObject/MapComponentPrefab")]
 public class MapComponentPrefabSO: ScriptableObject {
-    [SerializeField] private GameObject _ingredientPrefab;
-    public GameObject IngredientPrefab => this._ingredientPrefab;
+    [SerializeField] private GameObject _CombinablePrefab;
+    public GameObject CombinablePrefab => this._CombinablePrefab;
     [SerializeField] private GameObject _tablePrefab;
     public GameObject TablePrefab => this._tablePrefab;
     [SerializeField] private GameObject _utilityPrefab;

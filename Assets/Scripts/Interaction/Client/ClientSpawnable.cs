@@ -1,15 +1,27 @@
 using UnityEngine;
 using Unity.Netcode;
+using Unity.Collections;
 
 public class ClientSpawnable : ClientInteractable {
-    // TODO: dynamically change _info according to received map config
-    [SerializeField] private ServerSpawnable _server;
-    private SpawnableSO _info;
 
-    public override void OnNetworkSpawn(){
-        base.OnNetworkSpawn();
-        this._info = SpawnableSO.GetSO(this._server.InfoStrKey.Value.ToString());
-    }
+    private new ServerSpawnable _server => (ServerSpawnable)base._server;
+    private new SpawnableSO _info => (SpawnableSO)base._info;
+    public new SpawnableSO Info => (SpawnableSO)base._info;
+
+    // protected override void Awake(){
+    //     base.Awake();
+    // }
+
+    // public override void OnNetworkSpawn(){
+    //     this._server.InfoStrKey.OnValueChanged += this.OnServerInfoInit;
+    // }
+
+    // internal void OnServerInfoInit(FixedString128Bytes previous, FixedString128Bytes cur){
+    //     if (!this.IsClient) return;
+    //     this._spawnningGrabbableInfo = CombinableSO.GetSO(this._server.InfoStrKey.Value.ToString());
+    //     // if (this._spawnningGrabbableInfo == null) return;
+    //     // this._spawnningGrabbableInfo.RegisterObject();
+    // }
 
     // public void RequestSpawnAndGrab(PlayerGrabbingControl grabbingControl){
     //     this._server.SpawnAndGrabServerRpc(grabbingControl.NetworkObjectReferenceBuf);

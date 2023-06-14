@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ab0bb36da9b8b44826e4aa0c1a8044, type: 3}
+  m_Name: CutTomato
+  m_EditorClassIdentifier: 
+  _mesh: {fileID: -4196905887485900185, guid: f7eb075f2b7036e469890be4efa0c8cb, type: 3}
+  _meshCollider: {fileID: 4111671044020106828, guid: a680067804cc58b41a0dc15cf7bad0a4, type: 3}
+  _material: {fileID: 2100000, guid: e197d97ccddea2b4b9e549733881f381, type: 2}
+  _placeableTo: []
+  _compatibleUtensils: []
+  _combinableTo:
+  - {fileID: 11400000, guid: 3140da2c98f8c9943b2fe6a62445be2a, type: 2}
+  RequiredCombinables:
+  - {fileID: 11400000, guid: 62b7b78de4c42ec4ab752c9f03705303, type: 2}
+  RequiredStationeryUtility: {fileID: 11400000, guid: 278ddf87e4f2c5442a59f56ad5d9b527, type: 2}

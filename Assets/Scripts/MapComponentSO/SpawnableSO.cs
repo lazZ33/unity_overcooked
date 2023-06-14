@@ -5,12 +5,12 @@ using Unity.Netcode;
 [Serializable]
 [CreateAssetMenu(fileName = "Spawn", menuName = "ScriptableObject/Spawnable")]
 public class SpawnableSO: InteractableSO{
-    [SerializeField] public GrabbableSO SpawnningSO = null;
-    [SerializeField] public Sprite SpawnDisplay = null;
+    [SerializeField] private Sprite _spawnDisplay = null;
+    public Sprite SpawnDisplay => this._spawnDisplay;
+    [SerializeField] private Vector3 _localSpawnPoint;
+    public Vector3 LocalSpawnPoint => this._localSpawnPoint;
 
-    public static SpawnableSO GetSO(String strKey){
-        SpawnableSO info = (SpawnableSO) Resources.Load("InteractableSO/Spawnable/" + strKey);
-        if (info == null) Debug.LogError("SO resource failed to load, possibly corrupted filename or SO name list. Tried path: SpawnableSO/" + strKey);
-        return info;
-    }
+    public static new SpawnableSO GetSO(string strKey) => (SpawnableSO)InteractableSO.GetSO(strKey);
+    public static new SpawnableSO TryGetSO(string strKey) => (SpawnableSO)InteractableSO.TryGetSO(strKey);
+
 }

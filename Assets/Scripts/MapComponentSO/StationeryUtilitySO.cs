@@ -4,33 +4,34 @@ using System.Collections.Generic;
 using System;
 
 [Serializable]
-[CreateAssetMenu(fileName = "StatioenryUtility", menuName = "ScriptableObject/StatioenryUtility")]
+[CreateAssetMenu(fileName = "StationeryUtility", menuName = "ScriptableObject/StationeryUtility")]
 public class StationeryUtilitySO: HolderSO{
-    [SerializeField] public string UsableName;
-    [SerializeField] public bool HoldToUse;
-    [SerializeField] public int UseTime;
-    [SerializeField] private List<GrabbableSO> _usableTo = new List<GrabbableSO>();
+    [SerializeField] private bool _isHoldToUse;
+    public bool IsHoldToUse => this._isHoldToUse;
+    [SerializeField] private int _useTime;
+    public int UseTime => this._useTime;
+    [SerializeField] private double _onUsingUpdateInterval;
+    public double OnUsingUpdateInterval => this._onUsingUpdateInterval;
+    [SerializeField] private UtensilSO _bindingUtensil;
+    internal UtensilSO BindingUtensil => this._bindingUtensil;
 
-    private List<GrabbableSO> _existingUsableTo = new List<GrabbableSO>();
+    public static new StationeryUtilitySO GetSO(string strKey) => (StationeryUtilitySO)HolderSO.GetSO(strKey);
+    public static new StationeryUtilitySO TryGetSO(string strKey) => (StationeryUtilitySO)InteractableSO.TryGetSO(strKey);
 
-    public bool CanUseOn(GrabbableSO targetGrabbableSO){
-        return this._existingUsableTo.Contains(targetGrabbableSO);
-    }
 
-    public void RegisterObject(){
-        Debug.Log("Registering HolderSO: " + this.name);
-        InteractableSO.ExistingInteractable.Add(this);
-        GrabbableSO.UpdateAllRelationships(); // assume each type of grabbable can only processed by 1 stationeryUtility
+    // public void RegisterObject(){
+    //     Debug.Log("Registering HolderSO: " + this.name);
+    //     InteractableSO._existingInteractable.Add(this);
 
-        foreach (InteractableSO curExistingInteractableSO in InteractableSO.ExistingInteractable){
-            switch (curExistingInteractableSO){
-                case GrabbableSO curExistingGrabbableSO:
-                    if (this._usableTo.Contains(curExistingGrabbableSO)){
-                        this._existingUsableTo.Add(curExistingGrabbableSO);
-                    }
-                    break;
-            }
-        }
-    }
+    //     foreach (InteractableSO curExistingInteractableSO in InteractableSO._existingInteractable){
+    //         switch (curExistingInteractableSO){
+    //             case GrabbableSO curExistingGrabbableSO:
+    //                 if (this._usableTo.Contains(curExistingGrabbableSO)){
+    //                     this._existingUsableTo.Add(curExistingGrabbableSO);
+    //                 }
+    //                 break;
+    //         }
+    //     }
+    // }
 
 }

@@ -1,6 +1,6 @@
-using UnityEngine;
-using Unity.Netcode;
+using Unity;
+using System;
 
-public class ClientIngredient: ClientGrabbable{
+public class ClientIngredient: ClientCombinable{
 
 }

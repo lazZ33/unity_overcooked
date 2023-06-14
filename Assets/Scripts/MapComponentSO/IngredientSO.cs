@@ -1,10 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using Unity;
 using UnityEngine;
+using System;
 
 [Serializable]
 [CreateAssetMenu(fileName = "Ingredient", menuName = "ScriptableObject/Ingredient")]
-public class IngredientSO: GrabbableSO{
-    
+public class IngredientSO: CombinableSO{
+
 }

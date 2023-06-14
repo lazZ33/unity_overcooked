@@ -1,6 +1,6 @@
-using UnityEngine;
-using Unity.Netcode;
+using Unity;
+using System;
 
-public class ServerIngredient: ServerGrabbable{
+public class ServerIngredient: ServerCombinable{
 
 }

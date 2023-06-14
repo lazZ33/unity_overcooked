@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b468621184cf5849951086184187bc6, type: 3}
   m_Name: MapComponentPrefabSO
   m_EditorClassIdentifier: 
-  _ingredientPrefab: {fileID: 7062854213495437386, guid: 37edebb0ff73d534597437a1d25405c3, type: 3}
+  _CombinablePrefab: {fileID: 7062854213495437386, guid: 37edebb0ff73d534597437a1d25405c3, type: 3}
   _tablePrefab: {fileID: 3152565180650303578, guid: 795e40c4af03cee46a31280f879bbc16, type: 3}
   _utilityPrefab: {fileID: 361355101908152114, guid: 196b9ff8c01173d47839f80de28c28f3, type: 3}
   _spawnablePrefab: {fileID: 3241943083451402092, guid: e2b4ec36799ab894fb875da4a2fab3c3, type: 3}

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ab0bb36da9b8b44826e4aa0c1a8044, type: 3}
+  m_Name: Lamb
+  m_EditorClassIdentifier: 
+  _mesh: {fileID: -7661124072915667876, guid: c696ac6d3a3e6f3498660d418d8fe5a0, type: 3}
+  _meshCollider: {fileID: -494866541199811230, guid: 0600cd3d1155a0e4c8f29944aba6ff0c, type: 3}
+  _material: {fileID: 2100000, guid: e197d97ccddea2b4b9e549733881f381, type: 2}
+  _placeableTo:
+  - {fileID: 11400000, guid: 278ddf87e4f2c5442a59f56ad5d9b527, type: 2}
+  _compatibleUtensils: []
+  _combinableTo: []
+  RequiredCombinables: []
+  RequiredStationeryUtility: {fileID: 0}

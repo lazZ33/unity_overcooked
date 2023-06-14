@@ -1,90 +1,68 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using Unity.Collections;
 using UnityEngine;
 using Unity.Netcode;
 public class ClientGrabbable : ClientInteractable{
 
-    [SerializeField] private MeshFilter _meshFilter;
-    [SerializeField] private MeshCollider _meshCollider;
-    [SerializeField] private Renderer _renderer;
-    [SerializeField] private GrabbableSO _info;
-    [SerializeField] private ServerGrabbable _server;
+    public new GrabbableSO Info => (GrabbableSO)base._info;
+    private new GrabbableSO _info { get{ return (GrabbableSO)base._info; } set{ base._info = value; } }
+    private new ServerGrabbable _server => (ServerGrabbable)base._server;
 
-    public GrabbableSO Info => this._info;
+    public event EventHandler<InteractionEventArgs> OnGrab;
+    public event EventHandler<InteractionEventArgs> OnDrop;
+    public event EventHandler<InteractionEventArgs> OnTake;
+    public event EventHandler<InteractionEventArgs> OnPlace;
+    public event EventHandler<InteractionEventArgs> OnInfoChange;
+    protected event EventHandler<InteractionCallbackExtensionEventArgs> OnInteractionCallbackExtensionHook;
+    public class InteractionEventArgs: EventArgs{
+        internal InteractionEventArgs(GrabbableSO info){ this.Info = info; }
+        public GrabbableSO Info;
+    }
+    protected class InteractionCallbackExtensionEventArgs: EventArgs{
+        internal InteractionCallbackExtensionEventArgs(InteractionEventArgs args){ this.Args = args; }
+        internal InteractionCallbackID id;
+        internal InteractionEventArgs Args;
+    }
 
     public bool IsGrabbedByPlayer => this._server.IsGrabbedByPlayer;
     public bool IsGrabbedByLocal => this._server.IsGrabbedByLocal;
-    // public bool CanPlaceOn(ClientGrabbable targetGrabbable) => this.Info.CanPlaceOn(targetGrabbable.Info);
-    // public bool CanUseOn(ClientGrabbable targetGrabbable) => this.Info.CanUseOn(targetGrabbable.Info);
 
-    public override void OnNetworkSpawn()
-    {
+    public override void OnNetworkSpawn(){
         base.OnNetworkSpawn();
-        if (this.IsClient && !this.IsServer) this._meshCollider.enabled = false;
+        if (!this.IsClient) return;
 
-        this._server._infoStrKey.OnValueChanged += this.OnInfoChange;
-        this.OnInfoChange(ServerGrabbable.INFO_STR_KEY_DEFAULT, this._server._infoStrKey.Value);
+        this._server.OnInfoChange += this.OnInfoChangeCallback;
     }
 
-    public void OnInfoChange(FixedString128Bytes previous, FixedString128Bytes current){
-        if (current == ServerGrabbable.INFO_STR_KEY_DEFAULT) return;
-        print("OnChangeInfo");
-        
-        GrabbableSO grabbableSO = GrabbableSO.GetSO(current.ToString());
+    protected override void OnInfoChangeCallback(FixedString128Bytes previous, FixedString128Bytes current){
+        base.OnInfoChangeCallback(previous, current);
+                
+        this.OnInfoChange?.Invoke(this, new InteractionEventArgs(this._info));
+    }
 
-        this._info = grabbableSO;
-        this._meshFilter.mesh = this.Info.Mesh;
-        this._meshCollider.sharedMesh = this.Info.MeshCollider;
-        for (int i = 0; i < this._renderer.materials.Length; i++){
-            this._renderer.materials[i] = this.Info.Material;
+    [ClientRpc]
+    internal void InteractionCallbackClientRpc(InteractionCallbackID id){
+        InteractionEventArgs args = new InteractionEventArgs(this._info);
+        switch (id){
+            case InteractionCallbackID.OnGrab:
+                this.OnGrab?.Invoke(this, args);
+                break;
+            case InteractionCallbackID.OnDrop:
+                this.OnDrop?.Invoke(this, args);
+                break;
+            case InteractionCallbackID.OnTake:
+                this.OnTake?.Invoke(this, args);
+                break;
+            case InteractionCallbackID.OnPlace:
+                this.OnPlace?.Invoke(this, args);
+                break;
+            default:
+                this.OnInteractionCallbackExtensionHook?.Invoke(this, new InteractionCallbackExtensionEventArgs(args));
+                break;
         }
     }
-
-
-    // public void RequestSetInfo(string InfoStrKey){
-    //     print("RequestSetInfo");
-
-    //     this._server.SetInfoServerRpc(new FixedString128Bytes(InfoStrKey));
-    // }    
-
-    // public void RequestGrabBy(PlayerGrabbingControl grabbingControl){
-    //     if (this.IsGrabbedByPlayer()) return;
-    //     print("RequestGrabBy");
-
-    //     this._server.GrabServerRpc(grabbingControl.OwnerClientId);
-    // }
-
-    // public void RequestGrabFromHolder(PlayerGrabbingControl grabbingControl, ClientHolder holder){
-    //     if (this.IsGrabbedByPlayer()) return;
-    //     print("RequestGrabBy");
-
-    //     this._server.GrabFromHolderServerRpc(grabbingControl.OwnerClientId, holder.NetworkObjectReferenceBuf);
-    // }
-
-    // public void RequestDrop(){
-    //     print("RequestDrop");
-
-    //     this._server.DropServerRpc();
-    // }
-
-    // public void RequestInteract(ClientGrabbable targetGrabbable, PlayerGrabbingControl grabbingControl){
-    //     print("RequestInteract");
-
-    //     this._server.InteractServerRpc(targetGrabbable.NetworkObjectReferenceBuf, grabbingControl.OwnerClientId);
-    // }
-
-    // public void RequestPlaceTo(ClientHolder targetHolder, PlayerGrabbingControl grabbingControl){
-    //     print("RequestPlaceTo");
-
-    //     this._server.PlaceToServerRpc(targetHolder.NetworkObjectReferenceBuf, grabbingControl.OwnerClientId);
-    // }
-    // public void RequestPlaceTo(ClientHolder targetHolder){
-    //     print("RequestPlaceTo");
-
-    //     this._server.PlaceToServerRpc(targetHolder.NetworkObjectReferenceBuf);
-    // }
-
 
     public void Update(){
         // if (!this.IsOwner) return;

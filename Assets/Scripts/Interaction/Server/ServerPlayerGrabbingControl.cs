@@ -62,7 +62,7 @@ public class ServerPlayerGrabbingControl : NetworkBehaviour
         if (!validTargetExist) return null;
 
         foreach (RaycastHit hit in allHits){
-            if (Vector3.Distance(this._grabCollider.transform.position, hit.transform.position) >= Vector3.Distance(this._grabCollider.transform.position, targetHit.transform.position)){
+            if (Vector3.Distance(this._grabCollider.transform.position, hit.transform.position) <= Vector3.Distance(this._grabCollider.transform.position, targetHit.transform.position)){
                 targetHit = hit;
             }
         }
@@ -76,32 +76,34 @@ public class ServerPlayerGrabbingControl : NetworkBehaviour
         Transform targetInteractableTransform = this.GetExpectedTargetInteractableTransform();
         ServerInteractable targetInteractable = (targetInteractableTransform == null) ? null : targetInteractableTransform.GetComponent<ServerInteractable>();
 
-        if (this._holdGrabbable != null) {
+        if (this.IsHoldingGrabbable) {
 
             if (targetInteractable != null){
                 print("holdGrabbable and targetInteractable");
                 // with both _holdGrabbable and _targetInteractable
-                switch(targetInteractable){
-                    case ServerGrabbable targetGrabbable:
-                        print("holdGrabbable and targetGrabbable");
-                        if (this._holdGrabbable.CanPlaceOn(targetGrabbable)){
-                            switch(this._holdGrabbable){
-                                case ServerIngredient holdIngredient:
-                                    // holdIngredient combine with taregtGrabbable
-                                    this.GrabbableInteract(targetGrabbable, holdIngredient);
-                                    break;
-                                case ServerTool holdTool:
-                                    // targetGrabbable combine with holdIngredient
-                                    this.GrabbableInteract(holdTool, targetGrabbable);
-                                    break;
-                            }
-                            return;
-                        }
-
+                switch(targetInteractable, this._holdGrabbable){
+                    case (ServerUtensil targetUtensil, ServerUtensil holdUtensil):
+                        this.CombineUtensils(holdUtensil, targetUtensil);
                         break;
-                    case ServerHolder targetHolder:
-                        print("holdGrabbable and targetHolder");
-                        // TODO: put _holdGrabbable onto the util
+                    case (ServerUtensil targetUtensil, ServerCombinable holdCombinable):
+                        this.CombineWithUtensil(targetUtensil, holdCombinable);
+                        break;
+                    case (ServerCombinable targetCombinable, ServerUtensil holdUtensil):
+                        this.CombineWithUtensil(holdUtensil, targetCombinable);
+                        break;
+                    case (ServerCombinable targetCombinable, ServerCombinable holdCombinable):
+                        print("both combinable");
+                        if (holdCombinable.CanCombineWith(targetCombinable)){
+                            this.Combine(targetCombinable, holdCombinable);
+                            print("can combine");
+                        }
+                        break;
+                    case (ServerHolder targetHolder, ServerCombinable holdCombinable):
+                        if (targetHolder.IsHoldingGrabbable)
+                            this.HolderCombine(holdCombinable, targetHolder);
+                        this.TryDropToHolder(targetHolder);
+                        break;
+                    case (ServerHolder targetHolder, ServerGrabbable holdGrabbable):
                         this.TryDropToHolder(targetHolder);
                         break;
                 }
@@ -142,7 +144,7 @@ public class ServerPlayerGrabbingControl : NetworkBehaviour
             case ServerTool holdTool:
                 // TODO: use tool
                 return;
-            case ServerIngredient:
+            case ServerCombinable:
             case null:
                 break;
         }
@@ -199,12 +201,20 @@ public class ServerPlayerGrabbingControl : NetworkBehaviour
         this._interactions.DropServerInternal(this._holdGrabbable, this);
     }
     private void TryDropToHolder(ServerHolder targetHolder){
-        this._interactions.PlaceToHolderServerInternal(this._holdGrabbable, targetHolder, this);
+        this._interactions.PlaceToServerInternal(this._holdGrabbable, targetHolder, this);
     }
-    private void GrabbableInteract(ServerGrabbable retainedGrabbable, ServerGrabbable removedGrabbable){
-        this._interactions.InteractServerInternal(retainedGrabbable, removedGrabbable, this);
+    private void Combine(ServerCombinable retainedCombinable, ServerCombinable removedCombinable){
+        this._interactions.CombineServerInternal(retainedCombinable, removedCombinable, this);
     }
-
+    private void CombineWithUtensil(ServerUtensil targetUtensil, ServerCombinable targetCombinable){
+        this._interactions.UtensilCombineServerInteranl(targetUtensil, targetCombinable);
+    }
+    private void CombineUtensils(ServerUtensil targetUtensil, ServerUtensil priorityUtensil){
+        this._interactions.UtensilCombineServerInteranl(targetUtensil, priorityUtensil);
+    }
+    private void HolderCombine(ServerCombinable targetCombinable, ServerHolder targetHolder){
+        this._interactions.HolderCombineServerInternal(targetCombinable, targetHolder, this);
+    }
     private void UseUtility(IUsable targetUsable){
         this._interactions.UseServerInternal(targetUsable, this);
     }

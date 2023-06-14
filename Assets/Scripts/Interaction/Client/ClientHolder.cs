@@ -1,21 +1,10 @@
 using UnityEngine;
 using Unity;
 using Unity.Netcode;
+using Unity.Collections;
 
 public abstract class ClientHolder: ClientInteractable{
-    [SerializeField] private ServerHolder _server;
-
-    // public virtual void RequestPlace(ClientGrabbable targetGrabbable, PlayerGrabbingControl grabbingControl){
-    //     if (this.IsHoldingGrabbable) return;
-    //     print("baes Place");
-
-    //     this._server.PlaceServerRpc(targetGrabbable.NetworkObjectReferenceBuf, grabbingControl.OwnerClientId);
-    // }
-
-    // public virtual void RequestTake(PlayerGrabbingControl grabbingControl){
-    //     if (!this.IsHoldingGrabbable) return;
-    //     print("base Take");
-
-    //     this._server.TryTransferGrabbableControlTo(grabbingControl);
-    // }
+    private new ServerHolder _server => (ServerHolder)base._server;
+    private new HolderSO _info => (HolderSO)base._info;
+    public new HolderSO Info => (HolderSO)base._info;
 }

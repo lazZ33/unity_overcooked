@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2688ff632987c314cb86eabb3f5fc076, type: 3}
   m_Name: Table
   m_EditorClassIdentifier: 
-  _mesh: {fileID: 4493585093827132993, guid: 82f758fb753deaa4b96357dae9b2d9d8, type: 3}
-  _meshCollider: {fileID: 4493585093827132993, guid: 82f758fb753deaa4b96357dae9b2d9d8, type: 3}
-  _material: {fileID: 0}
+  _mesh: {fileID: -2432090755550338912, guid: 1e05ee6da1b84834ba06d75d129bff76, type: 3}
+  _meshCollider: {fileID: -2432090755550338912, guid: 1e05ee6da1b84834ba06d75d129bff76, type: 3}
+  _material: {fileID: 2100000, guid: 0fad5a8677daab840ab5a451856c6267, type: 2}
   _holdable: []
+  LocalPlacePoint: {x: 0, y: 1.1, z: 0}

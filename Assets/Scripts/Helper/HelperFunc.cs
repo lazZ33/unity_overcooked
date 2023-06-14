@@ -24,4 +24,12 @@ public class HelperFunc{
         }  
     }
 
+    public static void LogEnumerable(IEnumerable<object> enumerable){
+        string msg = "";
+        foreach(object element in enumerable){
+            msg += element.ToString() + " ,";
+        }
+        Debug.Log(msg);
+    }
+
 }

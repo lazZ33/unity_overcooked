@@ -1,13 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
-public abstract class HolderSO: InteractableSO{
-    [SerializeField] private List<GrabbableSO> _holdable = new List<GrabbableSO>();
-    public List<GrabbableSO> Holdable => this._holdable;
+public abstract class HolderSO: InteractableSO, IHolderSO{
+    [SerializeField] public Vector3 LocalPlacePoint;
 
-    private HashSet<InteractableSO> _existingPlaceableTo { get; } = new HashSet<InteractableSO>();
+    public static new HolderSO GetSO(string strKey) => (HolderSO)InteractableSO.GetSO(strKey);
 
-    public bool CanPlaceOn(InteractableSO targetInteractableSO){
-        return this._existingPlaceableTo.Contains(targetInteractableSO);
-    }
 }

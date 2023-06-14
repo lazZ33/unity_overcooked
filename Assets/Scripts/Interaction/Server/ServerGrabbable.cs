@@ -1,85 +1,88 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using Unity.Collections;
 using UnityEngine;
 using Unity.Netcode;
 
 public class ServerGrabbable: ServerInteractable{
 
-    [SerializeField] private Rigidbody _rigidbody;
-    [SerializeField] private ClientGrabbable _client;
-    public static readonly ulong GRABBED_CLIENT_DEFAULT = ulong.MaxValue;
-    public static readonly FixedString128Bytes INFO_STR_KEY_DEFAULT = "";
-
+    private new ClientGrabbable _client => (ClientGrabbable)base._client;
+    private new GrabbableSO _info { get{ return (GrabbableSO)base._info; } set{ base._info = value; } }
+    public new GrabbableSO Info => (GrabbableSO)base._client.Info;
     private NetworkVariable<ulong> _grabbedClientId { get; } = new NetworkVariable<ulong>(ServerGrabbable.GRABBED_CLIENT_DEFAULT, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public ulong GrabbedClientId => this._grabbedClientId.Value;
-    public NetworkVariable<FixedString128Bytes> _infoStrKey { get; } = new NetworkVariable<FixedString128Bytes>(ServerGrabbable.INFO_STR_KEY_DEFAULT, NetworkVariableReadPermission.Everyone);
-    // public FixedString128Bytes InfoStrKey => _infoStrKey.Value;
-    public GrabbableSO Info => this._client.Info; // can't use this immediately after change because haven't sync(?)
 
+    public event EventHandler<InteractionEventArgs> OnGrab;
+    public event EventHandler<InteractionEventArgs> OnDrop;
+    public event EventHandler<InteractionEventArgs> OnTake;
+    public event EventHandler<InteractionEventArgs> OnPlace;
+    public class InteractionEventArgs: EventArgs{
+        internal InteractionEventArgs(GrabbableSO info, object obj){ this.Info = info; this.Object = obj; }
+        public GrabbableSO Info;
+        public object Object; // for generic use
+    }
 
     public bool IsGrabbedByPlayer => this.GrabbedClientId != ServerGrabbable.GRABBED_CLIENT_DEFAULT;
     public bool IsGrabbedByLocal => this.GrabbedClientId == NetworkManager.LocalClientId;
-    public bool CanPlaceOn(ServerGrabbable targetGrabbable) => this.Info.CanPlaceOn(targetGrabbable.Info);
-
-
-    [ServerRpc(RequireOwnership = false)]
-    public void SetInfoServerRpc(FixedString128Bytes InfoStrKey){
-        print("SetInfoServerRpc");
-        this._infoStrKey.Value = InfoStrKey;
-    }
-
-    public void OnPlaceToServerInternal(ServerHolder targetHolder){
-        print("PlaceToServerRpc");
-
-        this.NetworkObjectBuf.RemoveOwnership();
-
-        this.NetworkObjectBuf.TrySetParent(targetHolder.transform, false);
-        this._rigidbody.useGravity = false;
-        this.transform.localPosition = targetHolder.PlacePosition.localPosition;
-        this.transform.localPosition = targetHolder.PlacePosition.localPosition;
-        this._rigidbody.constraints = RigidbodyConstraints.FreezeAll;
-        // this.gameObject.layer = LayerMask.NameToLayer("GrabbedGrabbable");
-
-        this._grabbedClientId.Value = ServerGrabbable.GRABBED_CLIENT_DEFAULT;
-    }
+    public bool CanPlaceOn(ServerHolder targetHolder) => this.Info.CanPlaceOn(targetHolder.Info);
+    public bool CanPlaceOn(ServerUtensil targetUtensil) => this.Info.CanPlaceOn(targetUtensil.Info);
 
     internal void OnGrabServerInternal(ServerPlayerGrabbingControl grabbingControl){
         if (this.IsGrabbedByPlayer) return;
-        Transform grabbingControlTransform = grabbingControl.transform;
-        print("GrabServerRpc");
+        print("OnGrabServerInternal");
 
-        this.NetworkObjectBuf.TrySetParent(grabbingControlTransform, false);
-        this._rigidbody.useGravity = false;
-        this.transform.localPosition = grabbingControl.GrabPosition.localPosition;
-        this.transform.localRotation = grabbingControl.GrabPosition.localRotation;
-        this._rigidbody.constraints = RigidbodyConstraints.FreezeAll;
-        // this.gameObject.layer = LayerMask.NameToLayer("GrabbedGrabbable");
-
-        this.NetworkObjectBuf.ChangeOwnership(grabbingControl.OwnerClientId);
-
+        this.gameObject.layer = LayerMask.NameToLayer("GrabbedGrabbable");
         this._grabbedClientId.Value = grabbingControl.OwnerClientId;
+
+        this.OnGrab?.Invoke(this, new InteractionEventArgs(this._info, grabbingControl));
+        this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnGrab);
         print("grabbed");
-        return;
+    }
+    internal void OnGrabServerInternal(ServerUtensil targetUtensil){
+        if (this.IsGrabbedByPlayer) return;
+        print("OnGrabServerInternal");
+
+        this.gameObject.layer = LayerMask.NameToLayer("GrabbedGrabbable");
+        this._grabbedClientId.Value = ServerGrabbable.GRABBED_CLIENT_DEFAULT;
+
+        this.OnGrab?.Invoke(this, new InteractionEventArgs(this._info, targetUtensil));
+        this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnGrab);
+        print("grabbed");
     }
 
     internal void OnDropServerInternal(){
-        print("DropServerRpc");
-        this.NetworkObjectBuf.RemoveOwnership();
-        this.NetworkObjectBuf.TryRemoveParent();
-        this._rigidbody.useGravity = true;
-        this._rigidbody.constraints = RigidbodyConstraints.None;
+        print("OnDropServerInternal");
+
+        this.gameObject.layer = LayerMask.NameToLayer("Interactable");
         this._grabbedClientId.Value = ServerGrabbable.GRABBED_CLIENT_DEFAULT;
-        // this.gameObject.layer = LayerMask.NameToLayer("Interactable");
+
+        this.OnDrop?.Invoke(this, new InteractionEventArgs(this._info, null));
+        this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnDrop);
         print("Dropped");
     }
-    internal void OnInteractServerInternal(ServerGrabbable targetGrabbable){
-        print("InteractServerRpc");
 
-        // GrabbableSO nextSO = GrabbableSO.getNextSO(this._client.Info, targetGrabbable.Info);
-        this._infoStrKey.Value = GrabbableSO.getNextSOStrKey(this._client.Info, targetGrabbable.Info);
-        targetGrabbable.NetworkObjectBuf.Despawn();
+    internal void OnTakeServerInternal(ServerPlayerGrabbingControl grabbingControl){
+        print("OnTakeServer");
+
+        this.OnGrabServerInternal(grabbingControl);
+
+        this.OnTake?.Invoke(this, new InteractionEventArgs(this._info, null));
+        this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnTake);
+        print("Taken");
     }
+
+    internal void OnPlaceToServerInternal(ServerHolder targetHolder){
+        print("OnPlaceToServerInternal");
+
+        this.gameObject.layer = LayerMask.NameToLayer("GrabbedGrabbable");
+        this._grabbedClientId.Value = ServerGrabbable.GRABBED_CLIENT_DEFAULT;
+
+        this.OnPlace?.Invoke(this, new InteractionEventArgs(this._info, targetHolder));
+        this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnPlace);
+        print("Placed");
+    }
+
 
     public void Update(){
         // if (!this.IsOwner) return;

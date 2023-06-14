@@ -14,7 +14,6 @@ public class ServerMapGenerator {
 
     public CellState[,] GenerateMapArray(int XSize, int YSize, int utilityAmount, int spawnAmount, int toolAmount, int interactableGroupAmount){
         Debug.Log("Start generating map");
-        // IngredientSO[] recipe = new IngredientSO[5];
 
         // init map
         this._mapX = XSize;
@@ -113,6 +112,7 @@ public class ServerMapGenerator {
         });
         HelperFunc.Shuffle(interestedCells);
         for (int i = 0; i < interestedCells.Count; i++){
+            // Debug.Log(String.Format("{0},{1},{2},{3}", (i >= utilityAmount+spawnAmount+1) , (i >= utilityAmount+spawnAmount), (i >= utilityAmount), (i < utilityAmount)));
             if (i >= utilityAmount+spawnAmount+1) interestedCells[i].cellState = CellState.Exit;
             else if (i >= utilityAmount+spawnAmount) interestedCells[i].cellState = CellState.Entrance;
             else if (i >= utilityAmount) interestedCells[i].cellState = CellState.IngredientSpawn;

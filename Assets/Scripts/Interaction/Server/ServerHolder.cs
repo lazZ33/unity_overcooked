@@ -1,37 +1,37 @@
-using UnityEngine;
 using Unity;
+using UnityEngine;
 using Unity.Netcode;
+using Unity.Collections;
+using System;
 
-public abstract class ServerHolder: ServerInteractable{
+public abstract class ServerHolder: ServerInteractable, IHolder{
 
-    [SerializeField] protected ClientHolder _client;
-    [SerializeField] protected HolderSO _info = null;
-    public HolderSO Info => this._info;
-    [SerializeField] private Transform _placePosition = null;
-    public Transform PlacePosition => this._placePosition;
+    private new ClientHolder _client => (ClientHolder)base._client;
+    public new HolderSO Info { get { return (HolderSO)base._info; } set { base._info = value; } }    
 
-    internal bool IsHoldingGrabbable => this._holdGrabbable != null;
-    protected ServerGrabbable _holdGrabbable = null;
-    private Rigidbody _rigidbody = null;
+    internal ServerGrabbable HoldGrabbable { get; private set; }
 
-    protected override void Awake(){
-        base.Awake();
-        this.TryGetComponent<Rigidbody>(out this._rigidbody);
-        if (this._rigidbody != null) this._rigidbody.constraints = RigidbodyConstraints.FreezeAll;
-    }
+    internal bool IsHoldingGrabbable => this.HoldGrabbable != null;
 
     internal virtual void OnPlaceServerInternal(ServerGrabbable targetGrabbable){
         if (this.IsHoldingGrabbable) return;
         print("base OnPlaceServerInternal");
 
-        this._holdGrabbable = targetGrabbable;
+        this.HoldGrabbable = targetGrabbable;
     }
 
     internal virtual void OnTakeServerInternal(out ServerGrabbable takenGrabbable){
         if (!this.IsHoldingGrabbable) { Debug.LogError("OnTakeServerInternal called while not holding any grabbable"); takenGrabbable = null; return; }
         print("base OnTakeServerInternal");
 
-        takenGrabbable = this._holdGrabbable;
-        this._holdGrabbable = null;
+        takenGrabbable = this.HoldGrabbable;
+        this.HoldGrabbable = null;
+    }
+
+    void IHolder.OnPlaceServerInternal(ServerGrabbable targetGrabbable){
+        this.OnPlaceServerInternal(targetGrabbable);
+    }
+    void IHolder.OnTakeServerInternal(out ServerGrabbable targetGrabbable){
+        this.OnTakeServerInternal(out targetGrabbable);
     }
 }
