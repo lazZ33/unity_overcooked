@@ -25,7 +25,7 @@ public class ClientMapManager: NetworkBehaviour
     private CellState[,] _mapCellState;
     private ServerMapGenerator _mapGenerator;
     private List<CombinableSO> _requiredCombinableSOList;
-    private List<StationeryUtilitySO> _requiredStationeryUtilitySOList;
+    private List<UsableHolderSO> _requiredUsableHolderSOList;
 
     public override void OnNetworkSpawn(){
         base.OnNetworkSpawn();
@@ -41,8 +41,8 @@ public class ClientMapManager: NetworkBehaviour
         foreach (FixedString128Bytes strKey in this._server.TargetDishesSOStrKeys){
             this._targetDishesSO.Add(CombinableSO.GetSO(strKey.ToString()));
         }
-        CombinableSO.IdentifyRequiredBaseSO(this._targetDishesSO, out _requiredCombinableSOList, out _requiredStationeryUtilitySOList);
-        CombinableSO.LoadAllRequiredSO(_requiredCombinableSOList, _requiredStationeryUtilitySOList);
+        CombinableSO.IdentifyRequiredBaseSO(this._targetDishesSO, out _requiredCombinableSOList, out _requiredUsableHolderSOList);
+        CombinableSO.LoadAllRequiredSO(_requiredCombinableSOList, _requiredUsableHolderSOList);
     }
 
     // public void SetOrigin(int originX, int originY){

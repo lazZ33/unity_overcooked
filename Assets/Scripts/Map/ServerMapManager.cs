@@ -6,17 +6,6 @@ using UnityEngine;
 using Unity.Netcode;
 using Unity.Collections;
 
-// public class Point{
-//     public int x, y;
-//     public Point(int x, int y){
-//         this.x = x;
-//         this.y = y;
-//     }
-//     public static Point operator-(Point pt1, Point pt2){ return new Point(pt1.x - pt2.x, pt1.y - pt2.y); }
-//     public static Point operator+(Point pt1, Point pt2){ return new Point(pt1.x + pt2.x, pt1.y + pt2.y); }
-    
-// }
-
 public class ServerMapManager: NetworkBehaviour
 {
     [SerializeField] private ClientMapManager _client;
@@ -30,8 +19,6 @@ public class ServerMapManager: NetworkBehaviour
     [SerializeField] private int _minSpawnAmount = 0;
     [SerializeField] private int _minUtilityAmount = 0;
     [SerializeField] private int _toolAmount = 0;
-    // private int _entranceAmount = 1;
-    // private int _exitAmount = 1;
 
     public NetworkList<FixedString128Bytes> TargetDishesSOStrKeys { get; private set; }
     public NetworkVariable<int> TargetDishesAmount { get; } = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -39,7 +26,7 @@ public class ServerMapManager: NetworkBehaviour
     private CellState[,] _mapCellState;
     private ServerMapGenerator _mapGenerator;
     private List<CombinableSO> _requiredCombinableSOList;
-    private List<StationeryUtilitySO> _requiredStationeryUtilitySOList;
+    private List<UsableHolderSO> _requiredUsableHolderSOList;
 
     void Awake(){
         FixedString128Bytes[] targetDishesSOStrKeys = new FixedString128Bytes[this._targetDishesSO.Length];
@@ -57,16 +44,16 @@ public class ServerMapManager: NetworkBehaviour
         foreach (CombinableSO targetDish in this._targetDishesSO)
             TargetDishesSOStrKeys.Add(new FixedString128Bytes(targetDish.StrKey));
 
-        this.GenerateRquiredInteractableList(this._targetDishesSO, out this._requiredCombinableSOList, out this._requiredStationeryUtilitySOList);
+        this.GenerateRquiredInteractableList(this._targetDishesSO, out this._requiredCombinableSOList, out this._requiredUsableHolderSOList);
         string combinableListMsg = String.Format("{0} Combinables loaded:", this._requiredCombinableSOList.Count);
-        string stationeryUtilityListMsg = String.Format("{0} StationeryUtilities loaded:", this._requiredStationeryUtilitySOList.Count);
+        string stationeryUtilityListMsg = String.Format("{0} StationeryUtilities loaded:", this._requiredUsableHolderSOList.Count);
         foreach (CombinableSO curCombinableSO in this._requiredCombinableSOList) combinableListMsg += " " + curCombinableSO.name + ",";
-        foreach (StationeryUtilitySO curStationeryUtilitySO in this._requiredStationeryUtilitySOList) stationeryUtilityListMsg += " " + curStationeryUtilitySO.name + ",";
+        foreach (UsableHolderSO curUsableHolderSO in this._requiredUsableHolderSOList) stationeryUtilityListMsg += " " + curUsableHolderSO.name + ",";
         print(combinableListMsg);
         print(stationeryUtilityListMsg);
 
         int spawnAmount = this._requiredCombinableSOList.Count > this._minSpawnAmount ? this._requiredCombinableSOList.Count : this._minSpawnAmount;
-        int utilityAmount = this._requiredStationeryUtilitySOList.Count > this._minUtilityAmount ? this._requiredStationeryUtilitySOList.Count : this._minUtilityAmount;
+        int utilityAmount = this._requiredUsableHolderSOList.Count > this._minUtilityAmount ? this._requiredUsableHolderSOList.Count : this._minUtilityAmount;
 
         this._mapCellState = this._mapGenerator.GenerateMapArray(this._mapXSize, this._mapYSize, utilityAmount, spawnAmount, this._toolAmount, this._interactableGroupAmount);
     }
@@ -93,9 +80,9 @@ public class ServerMapManager: NetworkBehaviour
                     case CellState.Utility:
                         GameObject stationeryUtility = Instantiate(this._mapComponentPrefabs.UtilityPrefab, this.GetWorldCoor(x, y), Quaternion.identity);
 
-                        ServerStationeryUtility stationeryUtilityServer = stationeryUtility.GetComponent<ServerStationeryUtility>();
-                        stationeryUtilityServer.Info = this._requiredStationeryUtilitySOList[utilityIdx];
-                        utilityIdx = (utilityIdx+1) % this._requiredStationeryUtilitySOList.Count;
+                        ServerUsableHolder stationeryUtilityServer = stationeryUtility.GetComponent<ServerUsableHolder>();
+                        stationeryUtilityServer.Info = this._requiredUsableHolderSOList[utilityIdx];
+                        utilityIdx = (utilityIdx+1) % this._requiredUsableHolderSOList.Count;
 
                         stationeryUtilityServer.NetworkObjectBuf.Spawn();
                         break;
@@ -121,12 +108,8 @@ public class ServerMapManager: NetworkBehaviour
                         toolServer.NetworkObjectBuf.Spawn();
                         _interactions.PlaceToServerInternal(toolServer, tableServer);
                         break;
-                    case CellState.Entrance:
-                        GameObject entrance = Instantiate(this._mapComponentPrefabs.EntrancePrefab, this.GetWorldCoor(x, y), Quaternion.identity);
-                        entrance.GetComponent<NetworkObject>().Spawn();
-                        break;
-                    case CellState.Exit:
-                        GameObject exit = Instantiate(this._mapComponentPrefabs.ExitPrefab, this.GetWorldCoor(x, y), Quaternion.identity);
+                    case CellState.DishExit:
+                        GameObject exit = Instantiate(this._mapComponentPrefabs.DishExitPrefab, this.GetWorldCoor(x, y), Quaternion.identity);
                         exit.GetComponent<NetworkObject>().Spawn();
                         break;
                     default:
@@ -137,11 +120,11 @@ public class ServerMapManager: NetworkBehaviour
         }
     }
 
-    private void GenerateRquiredInteractableList(CombinableSO[] targetDishesSO, out List<CombinableSO> requiredCombinableSOList, out List<StationeryUtilitySO> requiredStationeryUtilitySOList){
-        if (!this.IsServer) { requiredCombinableSOList = null; requiredStationeryUtilitySOList = null; return;}
+    private void GenerateRquiredInteractableList(CombinableSO[] targetDishesSO, out List<CombinableSO> requiredCombinableSOList, out List<UsableHolderSO> requiredUsableHolderSOList){
+        if (!this.IsServer) { requiredCombinableSOList = null; requiredUsableHolderSOList = null; return;}
 
-        CombinableSO.IdentifyRequiredBaseSO(targetDishesSO, out requiredCombinableSOList, out requiredStationeryUtilitySOList);
-        CombinableSO.LoadAllRequiredSO(_requiredCombinableSOList, _requiredStationeryUtilitySOList);
+        CombinableSO.IdentifyRequiredBaseSO(targetDishesSO, out requiredCombinableSOList, out requiredUsableHolderSOList);
+        CombinableSO.LoadAllRequiredSO(_requiredCombinableSOList, _requiredUsableHolderSOList);
 
         return;
     }
@@ -162,18 +145,14 @@ public class ServerMapManager: NetworkBehaviour
                         Gizmos.DrawWireCube(this.GetWorldCoor(x,y)+(new Vector3(0,10,0)), new Vector3(cellXSize, cellYSize, 1));
                         break;
                     case CellState.Utility:
-                        Gizmos.color = Color.blue;
-                        Gizmos.DrawSphere(this.GetWorldCoor(x,y)+(new Vector3(0,10,0)), (float) cellXSize);
-                        break;
-                    case CellState.IngredientSpawn:
-                        Gizmos.color = Color.cyan;
-                        Gizmos.DrawSphere(this.GetWorldCoor(x,y)+(new Vector3(0,10,0)), (float) cellXSize);
-                        break;
-                    case CellState.Entrance:
                         Gizmos.color = Color.red;
                         Gizmos.DrawSphere(this.GetWorldCoor(x,y)+(new Vector3(0,10,0)), (float) cellXSize);
                         break;
-                    case CellState.Exit:
+                    case CellState.IngredientSpawn:
+                        Gizmos.color = Color.blue;
+                        Gizmos.DrawSphere(this.GetWorldCoor(x,y)+(new Vector3(0,10,0)), (float) cellXSize);
+                        break;
+                    case CellState.DishExit:
                         Gizmos.color = Color.green;
                         Gizmos.DrawSphere(this.GetWorldCoor(x,y)+(new Vector3(0,10,0)), (float) cellXSize);
                         break;

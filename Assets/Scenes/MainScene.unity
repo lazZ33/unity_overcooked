@@ -2490,8 +2490,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _client: {fileID: 1795955794}
   _interactions: {fileID: 1795955792}
-  _mapXSize: 30
-  _mapYSize: 20
+  _mapXSize: 20
+  _mapYSize: 14
   _mapZHeight: 0
   cellXSize: 1
   cellYSize: 1

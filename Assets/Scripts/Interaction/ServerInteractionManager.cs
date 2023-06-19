@@ -117,19 +117,30 @@ public class ServerInteractionManager: NetworkBehaviour{
     public void PlaceToServerInternal(ServerGrabbable targetGrabbable, ServerHolder targetHolder, ServerPlayerGrabbingControl grabbingControl){
         if (!this.IsServer) { Debug.LogError("Calling interactions in interaction manager directly from client-side"); return; }
         if (targetHolder.IsHoldingGrabbable) return;
-        if (!targetGrabbable.CanPlaceOn(targetHolder) && targetHolder.GetType() != typeof(ServerTable)) return;
+        // TODO: check if it is ServerScoringExit + targetGrabbable IsFinalProduct
+        if (!targetGrabbable.CanPlaceOn(targetHolder) && targetHolder.GetType() != typeof(ServerTable) && targetHolder.GetType() != typeof(ServerDishExit)) return;
         print("PlaceToHolderServerInternal");
-    
-        targetHolder.OnPlaceServerInternal(targetGrabbable);
-        targetGrabbable.OnPlaceToServerInternal(targetHolder);
-        grabbingControl.OnDropPlaceServerInternal();
 
         switch(targetHolder){
-            case ServerStationeryUtility targetStationeryUtility:
-                if (targetGrabbable.CanPlaceOn(targetStationeryUtility) && !targetStationeryUtility.IsHoldToUse){
-                    IUsable targetUsable = targetStationeryUtility; // TODO: change to implicit implementation of interface to skip this 
-                    targetUsable.OnUseServerInternal(grabbingControl);
-                    grabbingControl.OnUseServerInternal(targetStationeryUtility.Info.name);
+            case ServerUsableHolder targetUsableHolder:
+                targetHolder.OnPlaceServerInternal(targetGrabbable);
+                targetGrabbable.OnPlaceToServerInternal(targetHolder);
+                grabbingControl.OnDropPlaceServerInternal();
+
+                if (targetGrabbable.CanPlaceOn(targetUsableHolder) && !targetUsableHolder.IsHoldToUse){
+                    IUsable targetUsable = targetUsableHolder; // TODO: change to implicit implementation of interface to skip this 
+                    targetUsable.OnUseServerInternal();
+                    grabbingControl.OnUseServerInternal(targetUsableHolder.Info.name);
+                }
+                break;
+            case ServerDishExit targetScoringExit:
+                switch(targetGrabbable){
+                    case ServerCombinable targetCombinable:
+                        if (targetCombinable.IsFinalCombinable)
+                            targetHolder.OnPlaceServerInternal(targetGrabbable);
+                            targetGrabbable.OnPlaceToServerInternal(targetHolder);
+                            grabbingControl.OnDropPlaceServerInternal();
+                        break;
                 }
                 break;
         }
@@ -163,10 +174,10 @@ public class ServerInteractionManager: NetworkBehaviour{
         grabbingControl.OnGrabTakeServerInternal(targetGrabbable);
 
         switch(targetHolder){
-            case ServerStationeryUtility targetStationeryUtility:
-                if (targetGrabbable.CanPlaceOn(targetStationeryUtility) && !targetStationeryUtility.IsHoldToUse){
-                    IUsable targetUsable = targetStationeryUtility; // TODO: change to implicit implementation of interface to skip this 
-                    targetUsable.OnUnuseServerInternal(grabbingControl);
+            case ServerUsableHolder targetUsableHolder:
+                if (targetGrabbable.CanPlaceOn(targetUsableHolder) && !targetUsableHolder.IsHoldToUse){
+                    IUsable targetUsable = targetUsableHolder; // TODO: change to implicit implementation of interface to skip this 
+                    targetUsable.OnUnuseServerInternal();
                     grabbingControl.OnUnuseServerInternal();
                 }
                 break;
@@ -183,24 +194,24 @@ public class ServerInteractionManager: NetworkBehaviour{
         newGrabbable.OnGrabServerInternal(grabbingControl);
     }
 
-    public void ConvertServerInternal(ServerCombinable targetCombinable, ServerStationeryUtility targetStationeryUtility){
+    public void ConvertServerInternal(ServerCombinable targetCombinable, ServerUsableHolder targetUsableHolder){
         if (!this.IsServer) { Debug.LogError("Calling interactions in interaction manager directly from client-side"); return; }
         print("ConvertServerInternal");
 
-        string newGrabbbaleInfoStrKey = CombinableSO.GetNextSOStrKey(targetCombinable.Info, targetStationeryUtility.Info);
+        string newGrabbbaleInfoStrKey = CombinableSO.GetNextSOStrKey(targetCombinable.Info, targetUsableHolder.Info);
         targetCombinable.SetInfoServerInternal(newGrabbbaleInfoStrKey);
     }
 
     public void UseServerInternal(IUsable targetUsable, ServerPlayerGrabbingControl grabbingControl){
         if (!this.IsServer) { Debug.LogError("Calling interactions in interaction manager directly from client-side"); return; }
 
-        targetUsable.OnUseServerInternal(grabbingControl);
+        targetUsable.OnUseServerInternal();
     }
 
     public void UnuseServerInternal(IUsable targetUsable, ServerPlayerGrabbingControl grabbingControl){
         if (!this.IsServer) { Debug.LogError("Calling interactions in interaction manager directly from client-side"); return; }
 
-        targetUsable.OnUnuseServerInternal(grabbingControl);
+        targetUsable.OnUnuseServerInternal();
     }
 
 }
