@@ -14,7 +14,6 @@ public class ClientGrabbable : ClientInteractable{
     public event EventHandler<InteractionEventArgs> OnDrop;
     public event EventHandler<InteractionEventArgs> OnTake;
     public event EventHandler<InteractionEventArgs> OnPlace;
-    public event EventHandler<InteractionEventArgs> OnInfoChange;
     protected event EventHandler<InteractionCallbackExtensionEventArgs> OnInteractionCallbackExtensionHook;
     public class InteractionEventArgs: EventArgs{
         internal InteractionEventArgs(GrabbableSO info){ this.Info = info; }
@@ -28,19 +27,6 @@ public class ClientGrabbable : ClientInteractable{
 
     public bool IsGrabbedByPlayer => this._server.IsGrabbedByPlayer;
     public bool IsGrabbedByLocal => this._server.IsGrabbedByLocal;
-
-    public override void OnNetworkSpawn(){
-        base.OnNetworkSpawn();
-        if (!this.IsClient) return;
-
-        this._server.OnInfoChange += this.OnInfoChangeCallback;
-    }
-
-    protected override void OnInfoChangeCallback(FixedString128Bytes previous, FixedString128Bytes current){
-        base.OnInfoChangeCallback(previous, current);
-                
-        this.OnInfoChange?.Invoke(this, new InteractionEventArgs(this._info));
-    }
 
     [ClientRpc]
     internal void InteractionCallbackClientRpc(InteractionCallbackID id){

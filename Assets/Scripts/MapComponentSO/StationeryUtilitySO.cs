@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System;
 
 [Serializable]
-[CreateAssetMenu(fileName = "StationeryUtility", menuName = "ScriptableObject/StationeryUtility")]
-public class StationeryUtilitySO: HolderSO{
+[CreateAssetMenu(fileName = "UsableHolder", menuName = "ScriptableObject/UsableHolder")]
+public class UsableHolderSO: HolderSO{
     [SerializeField] private bool _isHoldToUse;
     public bool IsHoldToUse => this._isHoldToUse;
     [SerializeField] private int _useTime;
@@ -15,8 +15,8 @@ public class StationeryUtilitySO: HolderSO{
     [SerializeField] private UtensilSO _bindingUtensil;
     internal UtensilSO BindingUtensil => this._bindingUtensil;
 
-    public static new StationeryUtilitySO GetSO(string strKey) => (StationeryUtilitySO)HolderSO.GetSO(strKey);
-    public static new StationeryUtilitySO TryGetSO(string strKey) => (StationeryUtilitySO)InteractableSO.TryGetSO(strKey);
+    public static new UsableHolderSO GetSO(string strKey) => (UsableHolderSO)HolderSO.GetSO(strKey);
+    public static new UsableHolderSO TryGetSO(string strKey) => (UsableHolderSO)InteractableSO.TryGetSO(strKey);
 
 
     // public void RegisterObject(){

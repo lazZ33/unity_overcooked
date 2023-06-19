@@ -13,11 +13,13 @@ public class ServerInteractable: NetworkBehaviour{
 
     public NetworkObjectReference NetworkObjectReferenceBuf { get; private set; }
     public NetworkObject NetworkObjectBuf { get; private set; }
+    public event EventHandler<InfoChangeEventArgs> OnInfoChange;
+    public NetworkVariable<FixedString128Bytes>.OnValueChangedDelegate OnInfoChangeFromNV { get{ return this._infoStrKey.OnValueChanged; } set { this._infoStrKey.OnValueChanged = value; }}
+
 
     internal static readonly ulong GRABBED_CLIENT_DEFAULT = ulong.MaxValue;
     internal static readonly FixedString128Bytes INFO_STR_KEY_DEFAULT = "";
-    private NetworkVariable<FixedString128Bytes> InfoStrKey { get; } = new NetworkVariable<FixedString128Bytes>(ServerInteractable.INFO_STR_KEY_DEFAULT, NetworkVariableReadPermission.Everyone);
-    public NetworkVariable<FixedString128Bytes>.OnValueChangedDelegate OnInfoChange { get { return this.InfoStrKey.OnValueChanged; } set { this.InfoStrKey.OnValueChanged = value; } }
+    private NetworkVariable<FixedString128Bytes> _infoStrKey { get; } = new NetworkVariable<FixedString128Bytes>(ServerInteractable.INFO_STR_KEY_DEFAULT, NetworkVariableReadPermission.Everyone);
 
     protected virtual void Awake(){
         if (this.NetworkObjectBuf == null) this.NetworkObjectBuf = this.NetworkObject;
@@ -27,13 +29,15 @@ public class ServerInteractable: NetworkBehaviour{
         if (!IsServer) this.enabled = false;
 
         if (this.NetworkObjectBuf == null) this.NetworkObjectBuf = this.NetworkObject;
-        if (this._info != null) this.InfoStrKey.Value = this._info.StrKey;
+        if (this._info != null) this._infoStrKey.Value = this._info.StrKey;
         this.NetworkObjectReferenceBuf = new NetworkObjectReference(this.NetworkObjectBuf);
     }
 
     internal virtual void SetInfoServerInternal(string infoStrKey){
         print("SetInfoServerInternal");
         this._info = InteractableSO.GetSO(infoStrKey);
-        this.InfoStrKey.Value = infoStrKey;
+        this._infoStrKey.Value = infoStrKey;
+
+        this.OnInfoChange?.Invoke(this, new InfoChangeEventArgs(this._info));
     }
 }

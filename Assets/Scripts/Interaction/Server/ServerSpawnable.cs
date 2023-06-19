@@ -12,7 +12,6 @@ public class ServerSpawnable : ServerInteractable {
     private new ClientSpawnable _client => (ClientSpawnable)base._client;
     public new SpawnableSO Info { get { return (SpawnableSO)base._info; } set { base._info = value; } }    
 
-
     internal ServerCombinable SpawnCombinableServerInternal(){
         // spawn target object
         GameObject newCombinableObject = Instantiate(this._CombinablePrefab, this.transform.TransformPoint(this.Info.LocalSpawnPoint), Quaternion.identity);

@@ -4,11 +4,12 @@ using Unity.Netcode;
 using System.Collections;
 using System;
 
-public class ServerGrabbablePhysics: MonoBehaviour{
+public class ServerGrabbablePhysics: ServerInteractablePhysics{
     [SerializeField] private Rigidbody _rigidBody;
     [SerializeField] private ServerGrabbable _grabbableControl;
 
-    void Awake(){
+    protected override void Awake(){
+        base.Awake();
         this._grabbableControl.OnGrab += this.OnGrab;
         this._grabbableControl.OnDrop += this.OnDrop;
         // this._grabbableControl.OnTake += this.OnTake;
@@ -16,7 +17,7 @@ public class ServerGrabbablePhysics: MonoBehaviour{
         // this._grabbableControl.OnCombine += this.OnCombine;
     }
     
-    private void OnGrab(object sender, ServerGrabbable.InteractionEventArgs args){
+    private void OnGrab(object sender, GrabDropEventArgs args){
         ServerPlayerGrabbingControl grabbingControl = (ServerPlayerGrabbingControl)args.Object;
         ServerGrabbable grabbableControl = (ServerGrabbable)sender;
 
@@ -28,7 +29,7 @@ public class ServerGrabbablePhysics: MonoBehaviour{
         grabbableControl.NetworkObjectBuf.ChangeOwnership(grabbingControl.OwnerClientId);
     }
 
-    private void OnDrop(object sender, ServerGrabbable.InteractionEventArgs args){
+    private void OnDrop(object sender, GrabDropEventArgs args){
         ServerGrabbable grabbableControl = (ServerGrabbable)sender;
 
         grabbableControl.NetworkObjectBuf.RemoveOwnership();
@@ -42,7 +43,7 @@ public class ServerGrabbablePhysics: MonoBehaviour{
     //     this._rigidbody.constraints = RigidbodyConstraints.FreezeAll;
     // }
 
-    private void OnPlace(object sender, ServerGrabbable.InteractionEventArgs args){
+    private void OnPlace(object sender, GrabDropEventArgs args){
         ServerGrabbable grabbableControl = (ServerGrabbable)sender;
         ServerHolder targetHolder = (ServerHolder)args.Object;
 
@@ -55,7 +56,4 @@ public class ServerGrabbablePhysics: MonoBehaviour{
         this.transform.localPosition = targetHolder.Info.LocalPlacePoint;
     }
 
-    // private void OnCombine(object targetGrabbable, ServerGrabbable.InteractionEventArgs args){
-
-    // }
 }

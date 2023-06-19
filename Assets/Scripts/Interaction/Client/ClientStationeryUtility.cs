@@ -4,15 +4,15 @@ using Unity.Netcode;
 using Unity.Collections;
 using System;
 
-public class ClientStationeryUtility: ClientHolder{
+public class ClientUsableHolder: ClientHolder{
 
     public event EventHandler OnUse;
     public event EventHandler OnUsing;
     public event EventHandler OnUnuse;
 
-    private new ServerStationeryUtility _server => (ServerStationeryUtility)base._server;
-    private new StationeryUtilitySO _info => (StationeryUtilitySO)base._info;
-    public new StationeryUtilitySO Info => (StationeryUtilitySO)base._info;
+    private new ServerUsableHolder _server => (ServerUsableHolder)base._server;
+    private new UsableHolderSO _info => (UsableHolderSO)base._info;
+    public new UsableHolderSO Info => (UsableHolderSO)base._info;
     internal bool IsHoldToUse => (this.Info).IsHoldToUse;
 
     // protected override void Awake(){

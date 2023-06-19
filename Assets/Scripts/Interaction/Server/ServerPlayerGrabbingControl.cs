@@ -154,7 +154,7 @@ public class ServerPlayerGrabbingControl : NetworkBehaviour
         ServerInteractable targetInteractable = targetInteractableTransform.GetComponent<ServerInteractable>();
 
         switch(targetInteractable){
-            case ServerStationeryUtility targetStationeryUtility:
+            case ServerUsableHolder targetUsableHolder:
                 // TODO: use util
                 return;
             case ServerTable:

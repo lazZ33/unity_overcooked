@@ -13,9 +13,7 @@ public class MapComponentPrefabSO: ScriptableObject {
     public GameObject SpawnablePrefab => this._spawnablePrefab;
     [SerializeField] private GameObject _toolPrefab;
     public GameObject ToolPrefab => this._toolPrefab;
-    [SerializeField] private GameObject _entrancePrefab;
-    public GameObject EntrancePrefab => this._entrancePrefab;
-    [SerializeField] private GameObject _exitPrefab;
-    public GameObject ExitPrefab => this._exitPrefab;
+    [SerializeField] private GameObject _dishExitPrefab;
+    public GameObject DishExitPrefab => this._dishExitPrefab;
 
 }

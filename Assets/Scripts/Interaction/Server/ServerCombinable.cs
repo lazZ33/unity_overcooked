@@ -11,9 +11,10 @@ public class ServerCombinable: ServerGrabbable{
     private new CombinableSO _info { get{ return (CombinableSO)base._info; } set{ base._info = value; } }
     private new ClientCombinable _client => (ClientCombinable)base._client;
 
-    public event EventHandler<InteractionEventArgs> OnCombine;
+    public event EventHandler<GrabDropEventArgs> OnCombine;
 
     public bool CanCombineWith(ServerCombinable targetCombinable) => this._info.CanCombineWith(targetCombinable._info);
+    public bool IsFinalCombinable => this._info.IsFinalCombinable;
 
     internal void OnCombineServerInternal(ServerCombinable removedCombinable){
         print("OnCombineServerInternal");
@@ -21,7 +22,7 @@ public class ServerCombinable: ServerGrabbable{
         this.SetInfoServerInternal(CombinableSO.GetNextSOStrKey(this._info, removedCombinable._info));
         removedCombinable.NetworkObjectBuf.Despawn();
 
-        this.OnCombine?.Invoke(this, new InteractionEventArgs(this._info, removedCombinable));
+        this.OnCombine?.Invoke(this, new GrabDropEventArgs(this._info, removedCombinable));
         this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnCombine);
         print("Combined");
     }

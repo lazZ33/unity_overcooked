@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 
 public class HelperFunc{
-    private static System.Random rng = new System.Random();  
-    
+    private static System.Random rng = new System.Random();
+
     public static T dereference<T>(NetworkObjectReference reference){
         if (!reference.TryGet(out NetworkObject networkObject)) { Debug.LogError("failed to dereference " + typeof(T).ToString()); return default(T); }
         T result = networkObject.GetComponent<T>();

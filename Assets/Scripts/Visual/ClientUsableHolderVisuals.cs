@@ -3,9 +3,9 @@ using UnityEngine;
 using Unity.Collections;
 using System;
 
-public class ClientStationeryUtilityVisuals: MonoBehaviour{
+public class ClientUsableHolderVisuals: ClientInteractablePhysics{
 
-    [SerializeField] private ClientStationeryUtility _stationeryUtilityControl;
+    [SerializeField] private ClientUsableHolder _stationeryUtilityControl;
     [SerializeField] private MeshFilter _meshFilter;
     [SerializeField] private Renderer _renderer;
     [SerializeField] private Animator _animator;

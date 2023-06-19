@@ -10,7 +10,8 @@ public abstract class CombinableSO: GrabbableSO{
     
     [SerializeField] private CombinableSO[] _combinableTo;
     [SerializeField] private CombinableSO[] RequiredCombinables;
-    [SerializeField] private StationeryUtilitySO RequiredStationeryUtility;
+    [SerializeField] private UsableHolderSO RequiredUsableHolder;
+    [SerializeField] private bool _isFinalCombinable;
     
     public List<string> StrKeyList { get {
         if (this._strKeyList == null){
@@ -28,10 +29,12 @@ public abstract class CombinableSO: GrabbableSO{
     private string _strKey = null;
     private HashSet<CombinableSO> _existingCombinableTo { get; } = new HashSet<CombinableSO>();
 
-    public bool IsBaseCombinable => this.RequiredCombinables.Length == 0 && this.RequiredStationeryUtility == null;
+    public bool IsFinalCombinable => this._isFinalCombinable;
     public bool CanCombineWith(CombinableSO targetCombinableSO) => this._existingCombinableTo.Contains(targetCombinableSO);
     public static new CombinableSO GetSO(string strKey) => (CombinableSO)InteractableSO.GetSO(strKey);
     public static new CombinableSO TryGetSO(string strKey) => (CombinableSO)InteractableSO.TryGetSO(strKey);
+
+    private bool IsBaseCombinable => this.RequiredCombinables.Length == 0 && this.RequiredUsableHolder == null;
 
     protected override void OnEnable(){
         base.OnEnable();
@@ -45,13 +48,13 @@ public abstract class CombinableSO: GrabbableSO{
         strList.Sort();
         return String.Concat(strList);
     }
-    public static string GetNextSOStrKey(CombinableSO CombinableInfo, StationeryUtilitySO stationeryUtilityInfo){
+    public static string GetNextSOStrKey(CombinableSO CombinableInfo, UsableHolderSO stationeryUtilityInfo){
         List<string> strList = new List<string>(CombinableInfo.StrKeyList){stationeryUtilityInfo.StrKey};
         strList.Sort();
         return String.Concat(strList);
     }
 
-    public static void LoadAllRequiredSO(IEnumerable<CombinableSO> providedCombinables, List<StationeryUtilitySO> providedStationeryUtilities){
+    public static void LoadAllRequiredSO(IEnumerable<CombinableSO> providedCombinables, List<UsableHolderSO> providedStationeryUtilities){
 
         InteractableSO.LoadAllSO();
 
@@ -83,17 +86,17 @@ public abstract class CombinableSO: GrabbableSO{
             foreach (CombinableSO curCombinable1 in curCombinableSet){
                 CombinableSO newCombinable;
 
-                foreach (StationeryUtilitySO curStationeryUtilitySO in providedStationeryUtilities){
-                    if (!curCombinable1.CanPlaceOn(curStationeryUtilitySO)) continue;
+                foreach (UsableHolderSO curUsableHolderSO in providedStationeryUtilities){
+                    if (!curCombinable1.CanPlaceOn(curUsableHolderSO)) continue;
 
-                    newCombinable = CombinableSO.TryGetSO(CombinableSO.GetNextSOStrKey(curCombinable1, curStationeryUtilitySO));
+                    newCombinable = CombinableSO.TryGetSO(CombinableSO.GetNextSOStrKey(curCombinable1, curUsableHolderSO));
                     if (newCombinable == null) continue;
 
                     newCombinableSet.Add(newCombinable);
-                    curCombinable1._existingPlaceableTo.Add(curStationeryUtilitySO);
+                    curCombinable1._existingPlaceableTo.Add(curUsableHolderSO);
                     
-                    if (curCombinable1.CanPlaceOn(curStationeryUtilitySO.BindingUtensil))
-                        curCombinable1._existingComtapibleUtensil.Add(curStationeryUtilitySO.BindingUtensil);
+                    if (curCombinable1.CanPlaceOn(curUsableHolderSO.BindingUtensil))
+                        curCombinable1._existingComtapibleUtensil.Add(curUsableHolderSO.BindingUtensil);
 
                 }
 
@@ -148,19 +151,19 @@ public abstract class CombinableSO: GrabbableSO{
         }
     }
 
-    public static void IdentifyRequiredBaseSO(IEnumerable<CombinableSO> targetCombinables, out List<CombinableSO> requiredBaseCombinables, out List<StationeryUtilitySO> requiredStationeryUtilities){
+    public static void IdentifyRequiredBaseSO(IEnumerable<CombinableSO> targetCombinables, out List<CombinableSO> requiredBaseCombinables, out List<UsableHolderSO> requiredStationeryUtilities){
         // init hashset
         HashSet<CombinableSO> newCombinableSet = new HashSet<CombinableSO>();
         HashSet<CombinableSO> curCombinableSet = new HashSet<CombinableSO>();
         HashSet<CombinableSO> existingCombinableSet = new HashSet<CombinableSO>();
-        HashSet<StationeryUtilitySO> existingStationeryUtilitySet = new HashSet<StationeryUtilitySO>();
+        HashSet<UsableHolderSO> existingUsableHolderSet = new HashSet<UsableHolderSO>();
         HashSet<CombinableSO> tempCombinableSetBuffer;
         foreach (CombinableSO curCombinable in targetCombinables){
             // clear previous relationships, insert initial CombinableSO
             curCombinable._existingCombinableTo.Clear();
             newCombinableSet.Add(curCombinable);
-            if (curCombinable.RequiredStationeryUtility != null)
-                existingStationeryUtilitySet.Add(curCombinable.RequiredStationeryUtility);
+            if (curCombinable.RequiredUsableHolder != null)
+                existingUsableHolderSet.Add(curCombinable.RequiredUsableHolder);
         }
 
         while (newCombinableSet.Count != 0){
@@ -175,13 +178,13 @@ public abstract class CombinableSO: GrabbableSO{
             foreach (CombinableSO curCombinable in curCombinableSet)
                 foreach (CombinableSO containedCombinable in curCombinable.RequiredCombinables){
                     newCombinableSet.Add(containedCombinable);
-                    if (curCombinable.RequiredStationeryUtility != null)
-                        existingStationeryUtilitySet.Add(curCombinable.RequiredStationeryUtility);
+                    if (curCombinable.RequiredUsableHolder != null)
+                        existingUsableHolderSet.Add(curCombinable.RequiredUsableHolder);
                 }
         }
 
         requiredBaseCombinables = new List<CombinableSO>(existingCombinableSet.Where(SO => SO.IsBaseCombinable));
-        requiredStationeryUtilities = new List<StationeryUtilitySO>(existingStationeryUtilitySet);
+        requiredStationeryUtilities = new List<UsableHolderSO>(existingUsableHolderSet);
         HelperFunc.LogEnumerable(targetCombinables);
         HelperFunc.LogEnumerable(requiredBaseCombinables);
         return;
@@ -191,19 +194,19 @@ public abstract class CombinableSO: GrabbableSO{
         Debug.Log(this.name + ": " + this._strKey);
         if (this._strKeyList != null && this._strKey != null && this._strKey != "") return;
 
-        if (RequiredCombinables == null | RequiredCombinables.Length == 0){
+        if (RequiredCombinables == null){
             this._strKeyList = new List<string>(1){this.name};
             this._strKey = this.name;
             return;
         }
         
-        CombinableSO.IdentifyRequiredBaseSO(new List<CombinableSO>(){this}, out List<CombinableSO> requiredBaseCombinables, out List<StationeryUtilitySO> requiredStationeryUtilities);
+        CombinableSO.IdentifyRequiredBaseSO(new List<CombinableSO>(){this}, out List<CombinableSO> requiredBaseCombinables, out List<UsableHolderSO> requiredStationeryUtilities);
         List<string> strKeyList = new List<string>(requiredBaseCombinables.Count + requiredStationeryUtilities.Count);
 
         foreach(CombinableSO curCombinable in requiredBaseCombinables)
             strKeyList.Add(curCombinable.StrKey);
-        foreach(StationeryUtilitySO curStationeryUtility in requiredStationeryUtilities)
-            strKeyList.Add(curStationeryUtility.StrKey);
+        foreach(UsableHolderSO curUsableHolder in requiredStationeryUtilities)
+            strKeyList.Add(curUsableHolder.StrKey);
 
         strKeyList.Sort(); // assume no strings with same hashcode but different characters exist
 
@@ -212,30 +215,30 @@ public abstract class CombinableSO: GrabbableSO{
         Debug.Log(this._strKey);
     }
 
-    // public static void IdentifyRequiredSO(IEnumerable<CombinableSO> targetCombinables, out List<CombinableSO> requiredCombinable, out List<StationeryUtilitySO> requiredStationeryUtilities){
+    // public static void IdentifyRequiredSO(IEnumerable<CombinableSO> targetCombinables, out List<CombinableSO> requiredCombinable, out List<UsableHolderSO> requiredStationeryUtilities){
 
     //     requiredCombinable = CombinableSO.IdentifyRequiredBaseCombinables(targetCombinables);
     //     // init hashset
     //     // Pair<CombinableSO, List of required stationery utility to make that combinable>
-    //     Dictionary<CombinableSO, List<StationeryUtilitySO>> newCombinableDict = new Dictionary<CombinableSO, List<StationeryUtilitySO>>();
-    //     Dictionary<CombinableSO, List<StationeryUtilitySO>> curCombinableDict = new Dictionary<CombinableSO, List<StationeryUtilitySO>>();
-    //     Dictionary<CombinableSO, List<StationeryUtilitySO>> existingCombinableDict = new Dictionary<CombinableSO, List<StationeryUtilitySO>>();
-    //     Dictionary<CombinableSO, List<StationeryUtilitySO>> tempCombinableDictBuffer;
+    //     Dictionary<CombinableSO, List<UsableHolderSO>> newCombinableDict = new Dictionary<CombinableSO, List<UsableHolderSO>>();
+    //     Dictionary<CombinableSO, List<UsableHolderSO>> curCombinableDict = new Dictionary<CombinableSO, List<UsableHolderSO>>();
+    //     Dictionary<CombinableSO, List<UsableHolderSO>> existingCombinableDict = new Dictionary<CombinableSO, List<UsableHolderSO>>();
+    //     Dictionary<CombinableSO, List<UsableHolderSO>> tempCombinableDictBuffer;
     //     foreach (CombinableSO curCombinableSO in requiredCombinable){
     //         // clear previous relationships, insert initial CombinableSO
     //         curCombinableSO._existingCombinableTo.Clear();
-    //         List<StationeryUtilitySO> newStationeryUtilityDependencyList = new List<StationeryUtilitySO>(){};
-    //         if (curCombinableSO.RequiredStationeryUtility != null) newStationeryUtilityDependencyList.Add(curCombinableSO.RequiredStationeryUtility);
+    //         List<UsableHolderSO> newUsableHolderDependencyList = new List<UsableHolderSO>(){};
+    //         if (curCombinableSO.RequiredUsableHolder != null) newUsableHolderDependencyList.Add(curCombinableSO.RequiredUsableHolder);
 
-    //         newCombinableDict.Add(curCombinableSO, newStationeryUtilityDependencyList);
+    //         newCombinableDict.Add(curCombinableSO, newUsableHolderDependencyList);
     //     }
 
     //     while (newCombinableDict.Count != 0){
     //         // update current looping list
-    //         foreach(KeyValuePair<CombinableSO, List<StationeryUtilitySO>> newPair in newCombinableDict){
+    //         foreach(KeyValuePair<CombinableSO, List<UsableHolderSO>> newPair in newCombinableDict){
     //             existingCombinableDict.Add(newPair.Key, newPair.Value);
     //             Debug.Log(newPair.Key);
-    //             HelperFunc.LogEnumerable<StationeryUtilitySO>(newPair.Value);
+    //             HelperFunc.LogEnumerable<UsableHolderSO>(newPair.Value);
     //         }
     //         curCombinableDict.Clear();
     //         tempCombinableDictBuffer = newCombinableDict;
@@ -243,21 +246,21 @@ public abstract class CombinableSO: GrabbableSO{
     //         curCombinableDict = tempCombinableDictBuffer;
 
     //         // checking and updating relationships
-    //         foreach (KeyValuePair<CombinableSO, List<StationeryUtilitySO>> curPair1 in curCombinableDict){
-    //         foreach (KeyValuePair<CombinableSO, List<StationeryUtilitySO>> curPair2 in curCombinableDict){
+    //         foreach (KeyValuePair<CombinableSO, List<UsableHolderSO>> curPair1 in curCombinableDict){
+    //         foreach (KeyValuePair<CombinableSO, List<UsableHolderSO>> curPair2 in curCombinableDict){
 
     //             CombinableSO newCombinableSO;
-    //             List<StationeryUtilitySO> newStationeryUtilityDependencies = new List<StationeryUtilitySO>(curPair1.Value);
+    //             List<UsableHolderSO> newUsableHolderDependencies = new List<UsableHolderSO>(curPair1.Value);
 
     //             foreach (HolderSO curHolderSO in curPair1.Key._placeableTo){
     //                 switch (curHolderSO){
-    //                     case StationeryUtilitySO curStationeryUtilitySO:
-    //                         newCombinableSO = CombinableSO.TryGetSO(CombinableSO.GetNextSOStrKey(curPair1.Key, curStationeryUtilitySO));
+    //                     case UsableHolderSO curUsableHolderSO:
+    //                         newCombinableSO = CombinableSO.TryGetSO(CombinableSO.GetNextSOStrKey(curPair1.Key, curUsableHolderSO));
     //                         if (newCombinableSO == null) break;
 
-    //                         newStationeryUtilityDependencies.Add(curStationeryUtilitySO);
+    //                         newUsableHolderDependencies.Add(curUsableHolderSO);
 
-    //                         newCombinableDict.TryAdd(newCombinableSO, newStationeryUtilityDependencies);
+    //                         newCombinableDict.TryAdd(newCombinableSO, newUsableHolderDependencies);
     //                         break;
     //                     default:
     //                         break;
@@ -265,13 +268,13 @@ public abstract class CombinableSO: GrabbableSO{
     //             }
 
     //             foreach(UtensilSO curUtensilSO in curPair1.Key._compatibleUtensils){
-    //                 StationeryUtilitySO bindingStationeryUtility = curUtensilSO.BindingStationeryUtility;
-    //                 newCombinableSO = CombinableSO.TryGetSO(CombinableSO.GetNextSOStrKey(curPair1.Key, bindingStationeryUtility));
+    //                 UsableHolderSO bindingUsableHolder = curUtensilSO.BindingUsableHolder;
+    //                 newCombinableSO = CombinableSO.TryGetSO(CombinableSO.GetNextSOStrKey(curPair1.Key, bindingUsableHolder));
     //                 if (newCombinableSO == null) break;
 
-    //                 newStationeryUtilityDependencies.Add(bindingStationeryUtility);
+    //                 newUsableHolderDependencies.Add(bindingUsableHolder);
                     
-    //                 newCombinableDict.TryAdd(newCombinableSO, newStationeryUtilityDependencies);
+    //                 newCombinableDict.TryAdd(newCombinableSO, newUsableHolderDependencies);
     //                 break;
     //             }
 
@@ -280,39 +283,39 @@ public abstract class CombinableSO: GrabbableSO{
     //                 newCombinableSO = CombinableSO.TryGetSO(CombinableSO.GetNextSOStrKey(curPair1.Key, curPair2.Key));
     //                 if (newCombinableSO == null) { Debug.LogError("_combinableTo contains SO that related (next) SO cannot be loaded/cannot be combinded, error strKey: " + newCombinableStrKey); break; }
                     
-    //                 newStationeryUtilityDependencies.AddRange(curPair2.Value);
+    //                 newUsableHolderDependencies.AddRange(curPair2.Value);
 
-    //                 newCombinableDict.TryAdd(newCombinableSO, newStationeryUtilityDependencies);
+    //                 newCombinableDict.TryAdd(newCombinableSO, newUsableHolderDependencies);
     //             }
     //         }}
     //     }
 
     //     // check for utilities that can lead to the targetCombinables
-    //     requiredStationeryUtilities = new List<StationeryUtilitySO>();
-    //     foreach (KeyValuePair<CombinableSO, List<StationeryUtilitySO>> targetPair in existingCombinableDict.Where(pair => targetCombinables.Contains(pair.Key))){
-    //         foreach (StationeryUtilitySO requiredStationeryUtility in targetPair.Value){
-    //             if (!requiredStationeryUtilities.Contains(requiredStationeryUtility))
-    //                 requiredStationeryUtilities.Add(requiredStationeryUtility);
+    //     requiredStationeryUtilities = new List<UsableHolderSO>();
+    //     foreach (KeyValuePair<CombinableSO, List<UsableHolderSO>> targetPair in existingCombinableDict.Where(pair => targetCombinables.Contains(pair.Key))){
+    //         foreach (UsableHolderSO requiredUsableHolder in targetPair.Value){
+    //             if (!requiredStationeryUtilities.Contains(requiredUsableHolder))
+    //                 requiredStationeryUtilities.Add(requiredUsableHolder);
     //         }
     //     }
-    //     List<StationeryUtilitySO> requiredStationeryUtilitiesCopy = new List<StationeryUtilitySO>(requiredStationeryUtilities); // for using it in lambda func
+    //     List<UsableHolderSO> requiredStationeryUtilitiesCopy = new List<UsableHolderSO>(requiredStationeryUtilities); // for using it in lambda func
 
     //     // flush key and SO pair into _existingCombinableTo and _existingPlaceableTo 
-    //     IEnumerable<KeyValuePair<CombinableSO, List<StationeryUtilitySO>>> existingCombinablePairs = existingCombinableDict.Where(
+    //     IEnumerable<KeyValuePair<CombinableSO, List<UsableHolderSO>>> existingCombinablePairs = existingCombinableDict.Where(
     //         pair => 
     //         pair.Value.All(SO => requiredStationeryUtilitiesCopy.Contains(SO)) | pair.Value.Count == 0);
 
-    //     foreach (KeyValuePair<CombinableSO, List<StationeryUtilitySO>> curPair in existingCombinablePairs){
+    //     foreach (KeyValuePair<CombinableSO, List<UsableHolderSO>> curPair in existingCombinablePairs){
     //         // register every possible CombinableSO
     //         InteractableSO._existingInteractable.Add(curPair.Key.StrKey, curPair.Key);
 
-    //         IEnumerable<KeyValuePair<CombinableSO, List<StationeryUtilitySO>>> existingCombinablePairsToCurPair = existingCombinablePairs.Where(SO => existingCombinablePairs.Contains(SO));
-    //         foreach (KeyValuePair<CombinableSO, List<StationeryUtilitySO>> existingCombinablePair in existingCombinablePairs){
+    //         IEnumerable<KeyValuePair<CombinableSO, List<UsableHolderSO>>> existingCombinablePairsToCurPair = existingCombinablePairs.Where(SO => existingCombinablePairs.Contains(SO));
+    //         foreach (KeyValuePair<CombinableSO, List<UsableHolderSO>> existingCombinablePair in existingCombinablePairs){
     //             curPair.Key._existingCombinableTo.Add(existingCombinablePair.Key);
     //         }
-    //         IEnumerable<StationeryUtilitySO> existingStationeryUtilityPairsToCurPair = requiredStationeryUtilities.Where(SO => requiredStationeryUtilitiesCopy.Contains(SO));
-    //         foreach(StationeryUtilitySO curStationeryUtility in existingStationeryUtilityPairsToCurPair){
-    //             curPair.Key._existingPlaceableTo.Add(curStationeryUtility);
+    //         IEnumerable<UsableHolderSO> existingUsableHolderPairsToCurPair = requiredStationeryUtilities.Where(SO => requiredStationeryUtilitiesCopy.Contains(SO));
+    //         foreach(UsableHolderSO curUsableHolder in existingUsableHolderPairsToCurPair){
+    //             curPair.Key._existingPlaceableTo.Add(curUsableHolder);
     //         }
     //     }
         

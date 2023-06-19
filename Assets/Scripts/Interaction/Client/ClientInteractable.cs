@@ -15,9 +15,11 @@ public class ClientInteractable: NetworkBehaviour{
     public NetworkObjectReference NetworkObjectReferenceBuf { get; private set; }
     public NetworkObject NetworkObjectBuf { get; private set; }
 
+    public event EventHandler<InfoChangeEventArgs> OnInfoChange;
+
     protected virtual void Awake(){
         if (this.NetworkObjectBuf == null) this.NetworkObjectBuf = this.NetworkObject;
-        this._server.OnInfoChange += this.OnInfoChangeCallback;
+        this._server.OnInfoChangeFromNV += this.OnInfoChangeCallback;
     }
 
     public override void OnNetworkSpawn(){
@@ -29,6 +31,8 @@ public class ClientInteractable: NetworkBehaviour{
 
     protected virtual void OnInfoChangeCallback(FixedString128Bytes previous, FixedString128Bytes current){
         this._info = InteractableSO.GetSO(current.ToString());
+
+        this.OnInfoChange?.Invoke(this, new InfoChangeEventArgs(this._info));
     }
 
 }
