@@ -143,6 +143,11 @@ public class ServerInteractionManager: NetworkBehaviour{
                         break;
                 }
                 break;
+            case ServerTable targetTable:
+                targetTable.OnPlaceServerInternal(targetGrabbable);
+                targetGrabbable.OnGrabServerInternal(grabbingControl);
+                grabbingControl.OnDropPlaceServerInternal();
+                break;
         }
     }
     public void PlaceToServerInternal(ServerGrabbable targetGrabbable, ServerHolder targetHolder){

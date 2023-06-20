@@ -44,13 +44,7 @@ public class ServerMapManager: NetworkBehaviour
         foreach (CombinableSO targetDish in this._targetDishesSO)
             TargetDishesSOStrKeys.Add(new FixedString128Bytes(targetDish.StrKey));
 
-        this.GenerateRquiredInteractableList(this._targetDishesSO, out this._requiredCombinableSOList, out this._requiredUsableHolderSOList);
-        string combinableListMsg = String.Format("{0} Combinables loaded:", this._requiredCombinableSOList.Count);
-        string stationeryUtilityListMsg = String.Format("{0} StationeryUtilities loaded:", this._requiredUsableHolderSOList.Count);
-        foreach (CombinableSO curCombinableSO in this._requiredCombinableSOList) combinableListMsg += " " + curCombinableSO.name + ",";
-        foreach (UsableHolderSO curUsableHolderSO in this._requiredUsableHolderSOList) stationeryUtilityListMsg += " " + curUsableHolderSO.name + ",";
-        print(combinableListMsg);
-        print(stationeryUtilityListMsg);
+        this.IdentifyRquiredInteractableList(this._targetDishesSO, out this._requiredCombinableSOList, out this._requiredUsableHolderSOList);
 
         int spawnAmount = this._requiredCombinableSOList.Count > this._minSpawnAmount ? this._requiredCombinableSOList.Count : this._minSpawnAmount;
         int utilityAmount = this._requiredUsableHolderSOList.Count > this._minUtilityAmount ? this._requiredUsableHolderSOList.Count : this._minUtilityAmount;
@@ -120,11 +114,18 @@ public class ServerMapManager: NetworkBehaviour
         }
     }
 
-    private void GenerateRquiredInteractableList(CombinableSO[] targetDishesSO, out List<CombinableSO> requiredCombinableSOList, out List<UsableHolderSO> requiredUsableHolderSOList){
+    private void IdentifyRquiredInteractableList(CombinableSO[] targetDishesSO, out List<CombinableSO> requiredCombinableSOList, out List<UsableHolderSO> requiredUsableHolderSOList){
         if (!this.IsServer) { requiredCombinableSOList = null; requiredUsableHolderSOList = null; return;}
 
-        CombinableSO.IdentifyRequiredBaseSO(targetDishesSO, out requiredCombinableSOList, out requiredUsableHolderSOList);
-        CombinableSO.LoadAllRequiredSO(_requiredCombinableSOList, _requiredUsableHolderSOList);
+        CombinableSO.GetRequiredBaseSO(targetDishesSO, out requiredCombinableSOList, out requiredUsableHolderSOList);
+        CombinableSO.LoadAllRequiredSO(requiredCombinableSOList, requiredUsableHolderSOList);
+
+        string combinableListMsg = String.Format("{0} Combinables loaded:", requiredCombinableSOList.Count);
+        string stationeryUtilityListMsg = String.Format("{0} StationeryUtilities loaded:", requiredUsableHolderSOList.Count);
+        foreach (CombinableSO curCombinableSO in requiredCombinableSOList) combinableListMsg += " " + curCombinableSO.name + ",";
+        foreach (UsableHolderSO curUsableHolderSO in requiredUsableHolderSOList) stationeryUtilityListMsg += " " + curUsableHolderSO.name + ",";
+        print(combinableListMsg);
+        print(stationeryUtilityListMsg);
 
         return;
     }

@@ -20,4 +20,5 @@ MonoBehaviour:
   _compatibleUtensils: []
   _combinableTo: []
   RequiredCombinables: []
-  RequiredStationeryUtility: {fileID: 0}
+  RequiredUsableHolder: {fileID: 0}
+  _isFinalCombinable: 0

@@ -17,8 +17,8 @@ MonoBehaviour:
   _material: {fileID: 2100000, guid: e197d97ccddea2b4b9e549733881f381, type: 2}
   _placeableTo: []
   _compatibleUtensils: []
-  _combinableTo:
-  - {fileID: 11400000, guid: cb7d4e894adaf3746b0e1a1bb1958ad7, type: 2}
+  _combinableTo: []
   RequiredCombinables:
   - {fileID: 11400000, guid: 2852e49e42e71aa4aa3443d53f8ac8fe, type: 2}
-  RequiredStationeryUtility: {fileID: 11400000, guid: 278ddf87e4f2c5442a59f56ad5d9b527, type: 2}
+  RequiredUsableHolder: {fileID: 11400000, guid: 278ddf87e4f2c5442a59f56ad5d9b527, type: 2}
+  _isFinalCombinable: 0

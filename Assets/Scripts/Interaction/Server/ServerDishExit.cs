@@ -7,16 +7,10 @@ using Unity.Netcode;
 
 public class ServerDishExit: ServerHolder{
 
-    private new ClientHolder _client => (ClientHolder)base._client;
-    public new HolderSO Info { get { return (HolderSO)base._info; } set { base._info = value; } }
+    private new ClientDishExit _client => (ClientDishExit)base._client;
+    public new DishExitSO Info { get { return (DishExitSO)base._info; } set { base._info = value; } }
 
     public event EventHandler<DishOutEventArgs> OnDishOut;
-    public class DishOutEventArgs: EventArgs{
-        internal DishOutEventArgs(GrabbableSO dish){ this.Dish = dish; }
-        public GrabbableSO Dish;
-    }
-
-    // TODO: make ServerScoringExit inherits ServerUsableHolder(?)
 
     internal override void OnPlaceServerInternal(ServerGrabbable targetGrabbable){
         base.OnPlaceServerInternal(targetGrabbable);

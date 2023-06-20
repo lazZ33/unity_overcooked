@@ -1,10 +1,10 @@
 using Unity;
-using Unity.Collections;
 using UnityEngine;
 using Unity.Netcode;
+using Unity.Collections;
 using System;
 
-public class ServerHolderPhysics: ServerInteractablePhysics{
+public class ServerSpawnablePhysics : ServerInteractablePhysics{
     [SerializeField] private Rigidbody _rigidbody = null;
 
     public override void OnNetworkSpawn(){

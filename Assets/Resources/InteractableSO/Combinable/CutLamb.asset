@@ -21,4 +21,5 @@ MonoBehaviour:
   _combinableTo: []
   RequiredCombinables:
   - {fileID: 11400000, guid: 36f9c73f2c9d9fc4aa57a10f66ef510c, type: 2}
-  RequiredStationeryUtility: {fileID: 11400000, guid: 278ddf87e4f2c5442a59f56ad5d9b527, type: 2}
+  RequiredUsableHolder: {fileID: 11400000, guid: 278ddf87e4f2c5442a59f56ad5d9b527, type: 2}
+  _isFinalCombinable: 0

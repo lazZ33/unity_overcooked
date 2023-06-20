@@ -58,7 +58,7 @@ public class ServerGameManager: NetworkBehaviour{
         this._client.GameStateChangeCallbackClientRpc(newRandomTargetDish.StrKey, 0, GameStateChangeCallbackID.OnNewOrder);
     }
 
-    private void OnDishOut(object sender, ServerDishExit.DishOutEventArgs args){
+    private void OnDishOut(object sender, DishOutEventArgs args){
         // TODO: add score according to current existing orders
         Order matchingOrder = this._existingOrders.Find(order => order.RequestedDish == args.Dish);
         if (matchingOrder != null){

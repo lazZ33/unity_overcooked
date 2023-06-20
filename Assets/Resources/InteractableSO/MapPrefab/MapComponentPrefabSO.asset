@@ -17,5 +17,4 @@ MonoBehaviour:
   _utilityPrefab: {fileID: 361355101908152114, guid: 196b9ff8c01173d47839f80de28c28f3, type: 3}
   _spawnablePrefab: {fileID: 3241943083451402092, guid: e2b4ec36799ab894fb875da4a2fab3c3, type: 3}
   _toolPrefab: {fileID: 0}
-  _entrancePrefab: {fileID: 3152565180650303578, guid: 795e40c4af03cee46a31280f879bbc16, type: 3}
-  _exitPrefab: {fileID: 3152565180650303578, guid: 795e40c4af03cee46a31280f879bbc16, type: 3}
+  _dishExitPrefab: {fileID: 6167329971008096450, guid: 4a62585330ee6f149a3a548fe11c0ce5, type: 3}

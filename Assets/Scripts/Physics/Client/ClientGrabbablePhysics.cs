@@ -5,14 +5,10 @@ using Unity.Netcode;
 using System;
 
 public class ClientGrabbablePhysics: ClientInteractablePhysics{
-    [SerializeField] private MeshCollider _meshCollider;
-    [SerializeField] private ClientGrabbable _grabbableControl;
-
-    void Awake(){
-        this._grabbableControl.OnInfoChange += this.OnInfoChange;
-    }
+    [SerializeField] private Rigidbody _rigidBody;
+    protected ClientGrabbable _grabbableControl => (ClientGrabbable)base._interactableControl;
 
     public override void OnNetworkSpawn(){
-        if (this.IsClient && !this.IsServer) this._meshCollider.enabled = false;
+        if (this.IsClient && !this.IsHost) this._meshCollider.enabled = false;
     }
 }

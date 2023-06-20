@@ -3,23 +3,11 @@ using Unity.Netcode;
 
 public class ServerTool : ServerGrabbable, IUsable
 {
-    void IUsable.OnUseServerInternal(ServerPlayerGrabbingControl grabbingControl)
-    {
+    void IUsable.OnUseServerInternal(){
         return;
     }
 
-    void IUsable.OnUnuseServerInternal(ServerPlayerGrabbingControl grabbingControl)
-    {
-        return;
-    }
-
-    void IUsable.OnUseHoldServerInternal(ServerPlayerGrabbingControl grabbingControl)
-    {
-        return;
-    }
-
-    void IUsable.OnUseUnholdServerInternal(ServerPlayerGrabbingControl grabbingControl)
-    {
+    void IUsable.OnUnuseServerInternal(){
         return;
     }
 }

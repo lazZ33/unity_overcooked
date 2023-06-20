@@ -5,8 +5,8 @@ using Unity.Collections;
 using System;
 
 public abstract class ServerInteractablePhysics: NetworkBehaviour{
-    [SerializeField] private MeshCollider _meshCollider;
-    [SerializeField] private ServerInteractable _interactableControl;
+    [SerializeField] protected MeshCollider _meshCollider;
+    [SerializeField] protected ServerInteractable _interactableControl;
 
     protected virtual void Awake(){
         this._interactableControl.OnInfoChange += this.OnInfoChange;

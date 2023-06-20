@@ -6,7 +6,7 @@ using System;
 
 public class ServerGrabbablePhysics: ServerInteractablePhysics{
     [SerializeField] private Rigidbody _rigidBody;
-    [SerializeField] private ServerGrabbable _grabbableControl;
+    private ServerGrabbable _grabbableControl => (ServerGrabbable)base._interactableControl;
 
     protected override void Awake(){
         base.Awake();
@@ -16,7 +16,7 @@ public class ServerGrabbablePhysics: ServerInteractablePhysics{
         this._grabbableControl.OnPlace += this.OnPlace;
         // this._grabbableControl.OnCombine += this.OnCombine;
     }
-    
+
     private void OnGrab(object sender, GrabDropEventArgs args){
         ServerPlayerGrabbingControl grabbingControl = (ServerPlayerGrabbingControl)args.Object;
         ServerGrabbable grabbableControl = (ServerGrabbable)sender;

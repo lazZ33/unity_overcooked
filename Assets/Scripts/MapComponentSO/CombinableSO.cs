@@ -151,7 +151,7 @@ public abstract class CombinableSO: GrabbableSO{
         }
     }
 
-    public static void IdentifyRequiredBaseSO(IEnumerable<CombinableSO> targetCombinables, out List<CombinableSO> requiredBaseCombinables, out List<UsableHolderSO> requiredStationeryUtilities){
+    public static void GetRequiredBaseSO(IEnumerable<CombinableSO> targetCombinables, out List<CombinableSO> requiredBaseCombinables, out List<UsableHolderSO> requiredStationeryUtilities){
         // init hashset
         HashSet<CombinableSO> newCombinableSet = new HashSet<CombinableSO>();
         HashSet<CombinableSO> curCombinableSet = new HashSet<CombinableSO>();
@@ -185,26 +185,27 @@ public abstract class CombinableSO: GrabbableSO{
 
         requiredBaseCombinables = new List<CombinableSO>(existingCombinableSet.Where(SO => SO.IsBaseCombinable));
         requiredStationeryUtilities = new List<UsableHolderSO>(existingUsableHolderSet);
-        HelperFunc.LogEnumerable(targetCombinables);
-        HelperFunc.LogEnumerable(requiredBaseCombinables);
         return;
     }
 
+    // TODO: prevent stack overflow by log error on cyclic referencing/reaching max recursion on calling StrKey
     private void StrKeyInit(){
-        Debug.Log(this.name + ": " + this._strKey);
         if (this._strKeyList != null && this._strKey != null && this._strKey != "") return;
+        Debug.Log(this.name + " StrKeyInit");
 
-        if (RequiredCombinables == null){
+        if (this.IsBaseCombinable){
             this._strKeyList = new List<string>(1){this.name};
             this._strKey = this.name;
+            Debug.Log(this.name + ": " + this._strKey);
             return;
         }
         
-        CombinableSO.IdentifyRequiredBaseSO(new List<CombinableSO>(){this}, out List<CombinableSO> requiredBaseCombinables, out List<UsableHolderSO> requiredStationeryUtilities);
-        List<string> strKeyList = new List<string>(requiredBaseCombinables.Count + requiredStationeryUtilities.Count);
+        CombinableSO.GetRequiredBaseSO(new List<CombinableSO>(){this}, out List<CombinableSO> requiredBaseCombinables, out List<UsableHolderSO> requiredStationeryUtilities);
+        List<string> strKeyList = new List<string>(requiredBaseCombinables.Count + requiredStationeryUtilities.Count - 1);
 
         foreach(CombinableSO curCombinable in requiredBaseCombinables)
-            strKeyList.Add(curCombinable.StrKey);
+            if (curCombinable != this)
+                strKeyList.Add(curCombinable.StrKey);
         foreach(UsableHolderSO curUsableHolder in requiredStationeryUtilities)
             strKeyList.Add(curUsableHolder.StrKey);
 
@@ -212,7 +213,7 @@ public abstract class CombinableSO: GrabbableSO{
 
         this._strKeyList = strKeyList;
         this._strKey = String.Concat(this._strKeyList);
-        Debug.Log(this._strKey);
+        Debug.Log(this.name +  ": " + this._strKey);
     }
 
     // public static void IdentifyRequiredSO(IEnumerable<CombinableSO> targetCombinables, out List<CombinableSO> requiredCombinable, out List<UsableHolderSO> requiredStationeryUtilities){

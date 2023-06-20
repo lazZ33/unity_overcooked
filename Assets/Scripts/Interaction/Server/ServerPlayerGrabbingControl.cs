@@ -181,12 +181,6 @@ public class ServerPlayerGrabbingControl : NetworkBehaviour
     internal void OnUnuseServerInternal(){
         this._animator.Play("");
     }
-    internal void OnUseHoldServerInternal(){
-
-    }
-    internal void OnUseUnholdServerInternal(){
-        
-    }
 
     private void GrabDirect(ServerGrabbable targetGrabbable){
         this._interactions.GrabServerInternal(targetGrabbable, this);

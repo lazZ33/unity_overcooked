@@ -47,17 +47,15 @@ public class ServerUsableHolder : ServerHolder, IUsable
         print("OnUseHoldServerInternal");
         
         this.UseHoldStartTime = this.UseHoldCurTime;
-        // grabbingControl.OnUseHoldServerInternal();
         this.OnUnuse?.Invoke(this, new UseEventArgs(this.HoldGrabbable.Info));
         this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnUse, this.UseHoldStartTime, this.UseHoldCurTime);
         return;
     }
     void IUsable.OnUnuseServerInternal(){
-        if (this.Info.IsHoldToUse) return;
+        if (!this._isHoldingUse) return;
         print("OnUseHoldServerInternal");
         
         this.UseHoldStartTime = 0;
-        // grabbingControl.OnUseUnholdServerInternal();
         this.OnUnuse?.Invoke(this, new UseEventArgs(this.HoldGrabbable.Info));
         this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnUnuse, this.UseHoldStartTime, this.UseHoldCurTime);
         return;

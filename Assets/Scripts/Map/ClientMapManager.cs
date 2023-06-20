@@ -41,7 +41,7 @@ public class ClientMapManager: NetworkBehaviour
         foreach (FixedString128Bytes strKey in this._server.TargetDishesSOStrKeys){
             this._targetDishesSO.Add(CombinableSO.GetSO(strKey.ToString()));
         }
-        CombinableSO.IdentifyRequiredBaseSO(this._targetDishesSO, out _requiredCombinableSOList, out _requiredUsableHolderSOList);
+        CombinableSO.GetRequiredBaseSO(this._targetDishesSO, out _requiredCombinableSOList, out _requiredUsableHolderSOList);
         CombinableSO.LoadAllRequiredSO(_requiredCombinableSOList, _requiredUsableHolderSOList);
     }
 
