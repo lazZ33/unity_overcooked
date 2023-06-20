@@ -18,24 +18,27 @@ public class ServerGrabbablePhysics: ServerInteractablePhysics{
     }
 
     private void OnGrab(object sender, GrabDropEventArgs args){
+        print("OnGrab: ServerGrabbablePhysics");
         ServerPlayerGrabbingControl grabbingControl = (ServerPlayerGrabbingControl)args.Object;
         ServerGrabbable grabbableControl = (ServerGrabbable)sender;
 
         grabbableControl.NetworkObjectBuf.TrySetParent(grabbingControl.transform, false);
         this.transform.localPosition = grabbingControl.GrabPosition.localPosition;
         this.transform.localRotation = grabbingControl.GrabPosition.localRotation;
+
         this._rigidBody.useGravity = false;
         this._rigidBody.constraints = RigidbodyConstraints.FreezeAll;
         grabbableControl.NetworkObjectBuf.ChangeOwnership(grabbingControl.OwnerClientId);
     }
 
     private void OnDrop(object sender, GrabDropEventArgs args){
+        print("OnDrop: ServerGrabbablePhysics");
         ServerGrabbable grabbableControl = (ServerGrabbable)sender;
 
-        grabbableControl.NetworkObjectBuf.RemoveOwnership();
-        grabbableControl.NetworkObjectBuf.TryRemoveParent();
         this._rigidBody.useGravity = true;
         this._rigidBody.constraints = RigidbodyConstraints.None;
+        grabbableControl.NetworkObjectBuf.TryRemoveParent();
+        grabbableControl.NetworkObjectBuf.RemoveOwnership();
     }
 
     // private void OnTake(object sender, ServerGrabbable.InteractionEventArgs args){
@@ -44,16 +47,17 @@ public class ServerGrabbablePhysics: ServerInteractablePhysics{
     // }
 
     private void OnPlace(object sender, GrabDropEventArgs args){
+        print("OnPlace: ServerGrabbablePhysics");
         ServerGrabbable grabbableControl = (ServerGrabbable)sender;
         ServerHolder targetHolder = (ServerHolder)args.Object;
-
-        grabbableControl.NetworkObjectBuf.RemoveOwnership();
-        this._rigidBody.useGravity = false;
-        this._rigidBody.constraints = RigidbodyConstraints.FreezeAll;
 
         grabbableControl.NetworkObjectBuf.TrySetParent(targetHolder.transform, false);
         this.transform.localPosition = targetHolder.Info.LocalPlacePoint;
         this.transform.localPosition = targetHolder.Info.LocalPlacePoint;
+
+        this._rigidBody.useGravity = false;
+        this._rigidBody.constraints = RigidbodyConstraints.FreezeAll;
+        grabbableControl.NetworkObjectBuf.RemoveOwnership();
     }
 
 }

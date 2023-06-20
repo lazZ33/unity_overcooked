@@ -13,6 +13,7 @@ public abstract class ServerInteractablePhysics: NetworkBehaviour{
     }
 
     protected virtual void OnInfoChange(object sender, InfoChangeEventArgs args){
+        // print("OnInfoChange: ServerInteractablePhysics");
         this._meshCollider.sharedMesh = args.Info.MeshCollider;
     }
 }

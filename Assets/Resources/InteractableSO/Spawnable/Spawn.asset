@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Spawn
   m_EditorClassIdentifier: 
   _mesh: {fileID: 4300000, guid: 2fb39e5bc2caa9e498483bc9735b82ba, type: 2}
-  _meshCollider: {fileID: 4300000, guid: 2fb39e5bc2caa9e498483bc9735b82ba, type: 2}
+  _meshCollider: {fileID: -5495902117074765545, guid: 9e8526e5e398c1446a6a58f374edefa0, type: 3}
   _material: {fileID: 2100000, guid: e197d97ccddea2b4b9e549733881f381, type: 2}
   _spawnDisplay: {fileID: 0}
   _localSpawnPoint: {x: 0, y: 1, z: 0}

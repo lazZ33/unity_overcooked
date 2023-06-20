@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: AirFryerTray
   m_EditorClassIdentifier: 
   _mesh: {fileID: -68172968409305583, guid: 0ac85a8a32feb7f43b8246c295d7a2f9, type: 3}
-  _meshCollider: {fileID: -68172968409305583, guid: 0ac85a8a32feb7f43b8246c295d7a2f9, type: 3}
+  _meshCollider: {fileID: -4691906513582887508, guid: 7e37b7255a0a36a458d870f375e1b6e3, type: 3}
   _material: {fileID: 2100000, guid: f7bbd21b1298745458209aed31d9c489, type: 2}
   _placeableTo:
   - {fileID: 11400000, guid: 948d8c5d60530d845bc44af3bab51081, type: 2}
   _compatibleUtensils: []
-  _bindingStationeryUtility: {fileID: 11400000, guid: 948d8c5d60530d845bc44af3bab51081, type: 2}
+  _bindingUsableHolder: {fileID: 0}

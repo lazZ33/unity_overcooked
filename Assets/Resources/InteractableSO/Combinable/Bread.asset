@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bread
   m_EditorClassIdentifier: 
   _mesh: {fileID: 8168930237554579579, guid: 1339464f1b5371e4787d4d9939f274df, type: 3}
-  _meshCollider: {fileID: 2355165438852751769, guid: 9cf6e01be49d8a44096112a877c2947b, type: 3}
+  _meshCollider: {fileID: -4691906513582887508, guid: 7e37b7255a0a36a458d870f375e1b6e3, type: 3}
   _material: {fileID: 2100000, guid: e197d97ccddea2b4b9e549733881f381, type: 2}
   _placeableTo: []
   _compatibleUtensils: []
@@ -23,4 +23,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fd3e50c160082e74ab32554620f38610, type: 2}
   - {fileID: 11400000, guid: cb7d4e894adaf3746b0e1a1bb1958ad7, type: 2}
   RequiredCombinables: []
-  RequiredStationeryUtility: {fileID: 0}
+  RequiredUsableHolder: {fileID: 0}
+  _isFinalCombinable: 0

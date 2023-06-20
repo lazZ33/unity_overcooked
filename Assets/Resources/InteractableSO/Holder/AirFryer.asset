@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AirFryer
   m_EditorClassIdentifier: 
   _mesh: {fileID: 1475585861225107177, guid: 0ac85a8a32feb7f43b8246c295d7a2f9, type: 3}
-  _meshCollider: {fileID: 1475585861225107177, guid: 0ac85a8a32feb7f43b8246c295d7a2f9, type: 3}
+  _meshCollider: {fileID: -5495902117074765545, guid: 9e8526e5e398c1446a6a58f374edefa0, type: 3}
   _material: {fileID: -3809520769806320230, guid: 0ac85a8a32feb7f43b8246c295d7a2f9, type: 3}
   LocalPlacePoint: {x: 0, y: 0.75, z: 0}
   _isHoldToUse: 0

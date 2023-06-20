@@ -29,7 +29,10 @@ public class ServerInteractable: NetworkBehaviour{
         if (!IsServer) this.enabled = false;
 
         if (this.NetworkObjectBuf == null) this.NetworkObjectBuf = this.NetworkObject;
-        if (this._info != null) this._infoStrKey.Value = this._info.StrKey;
+        if (this._info != null){
+            this._infoStrKey.Value = this._info.StrKey;
+            this.OnInfoChange?.Invoke(this, new InfoChangeEventArgs(this._info));
+        }
         this.NetworkObjectReferenceBuf = new NetworkObjectReference(this.NetworkObjectBuf);
     }
 

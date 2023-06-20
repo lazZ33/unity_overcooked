@@ -14,6 +14,7 @@ public class ServerMapManager: NetworkBehaviour
     [SerializeField] private int cellXSize, cellYSize;
     [SerializeField] private Vector3 _origin;
     [SerializeField] private MapComponentPrefabSO _mapComponentPrefabs;
+    [SerializeField] private BasicComponentSO _basicComponentSO;
     [SerializeField] private CombinableSO[] _targetDishesSO;
     [SerializeField] private int _interactableGroupAmount;
     [SerializeField] private int _minSpawnAmount = 0;
@@ -67,9 +68,10 @@ public class ServerMapManager: NetworkBehaviour
                     case CellState.Unwalkable:
                     case CellState.Table:
                         GameObject tableOnly = Instantiate(this._mapComponentPrefabs.TablePrefab, this.GetWorldCoor(x, y), Quaternion.identity);
-                        // tablePrefab will have its own info
-                        // tableServer.Info = xxx;
-                        tableOnly.GetComponent<NetworkObject>().Spawn();
+
+                        ServerTable tableServer = tableOnly.GetComponent<ServerTable>();
+                        tableServer.Info = this._basicComponentSO.TableSO;
+                        tableServer.GetComponent<NetworkObject>().Spawn();
                         break;
                     case CellState.Utility:
                         GameObject stationeryUtility = Instantiate(this._mapComponentPrefabs.UtilityPrefab, this.GetWorldCoor(x, y), Quaternion.identity);
@@ -85,26 +87,29 @@ public class ServerMapManager: NetworkBehaviour
 
                         ServerSpawnable spawnableServer = spawnable.GetComponent<ServerSpawnable>();
                         spawnableServer.SpawnningCombinableInfo = this._requiredCombinableSOList[spawnableIdx];
-                        // spawnPrefab will have its own info
-                        // spawnableServer.Info = xxx;
+                        spawnableServer.Info = this._basicComponentSO.SpawnableSO;
                         spawnableIdx = (spawnableIdx+1) % this._requiredCombinableSOList.Count;
 
                         spawnableServer.NetworkObjectBuf.Spawn();
                         break;
                     case CellState.Tool:
                         GameObject table = Instantiate(this._mapComponentPrefabs.TablePrefab, this.GetWorldCoor(x, y), Quaternion.identity);
-                        // tablePrefab will have its own info
-                        // tableServer.Info = xxx;
+                        tableServer = table.GetComponent<ServerTable>();
+                        tableServer.Info = this._basicComponentSO.TableSO;
                         table.GetComponent<NetworkObject>().Spawn();
 
-                        ServerTable tableServer = table.GetComponent<ServerTable>();
+                        tableServer = table.GetComponent<ServerTable>();
                         ServerTool toolServer = Instantiate(this._mapComponentPrefabs.ToolPrefab, this.GetWorldCoor(x, y), Quaternion.identity).GetComponent<ServerTool>();
+                        // TODO: toolServer.Info = xxx;
                         toolServer.NetworkObjectBuf.Spawn();
-                        _interactions.PlaceToServerInternal(toolServer, tableServer);
+                        this._interactions.PlaceToServerInternal(toolServer, tableServer);
                         break;
                     case CellState.DishExit:
-                        GameObject exit = Instantiate(this._mapComponentPrefabs.DishExitPrefab, this.GetWorldCoor(x, y), Quaternion.identity);
-                        exit.GetComponent<NetworkObject>().Spawn();
+                        GameObject dishExit = Instantiate(this._mapComponentPrefabs.DishExitPrefab, this.GetWorldCoor(x, y), Quaternion.identity);
+
+                        ServerDishExit dishExitServer = dishExit.GetComponent<ServerDishExit>();
+                        dishExitServer.Info = this._basicComponentSO.DishExitSO;
+                        dishExitServer.GetComponent<NetworkObject>().Spawn();
                         break;
                     default:
                         Debug.LogWarning(String.Format("invalid CellState found when populating map, x:{0}, y:{1}", x, y));
