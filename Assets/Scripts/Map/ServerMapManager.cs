@@ -15,37 +15,45 @@ public class ServerMapManager: NetworkBehaviour
     [SerializeField] private Vector3 _origin;
     [SerializeField] private MapComponentPrefabSO _mapComponentPrefabs;
     [SerializeField] private BasicComponentSO _basicComponentSO;
-    [SerializeField] private CombinableSO[] _targetDishesSO;
     [SerializeField] private int _interactableGroupAmount;
     [SerializeField] private int _minSpawnAmount = 0;
     [SerializeField] private int _minUtilityAmount = 0;
     [SerializeField] private int _toolAmount = 0;
 
-    public NetworkList<FixedString128Bytes> TargetDishesSOStrKeys { get; private set; }
     public NetworkVariable<int> TargetDishesAmount { get; } = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public NetworkList<FixedString128Bytes> TargetDishesSOStrKeys { get; private set; }
+
+    public event EventHandler OnMapDespawn;
+    public event EventHandler<DishOutEventArgs> OnDishOut;
 
     private CellState[,] _mapCellState;
+    private CombinableSO[] _targetDishesSO;
     private ServerMapGenerator _mapGenerator;
     private List<CombinableSO> _requiredCombinableSOList;
     private List<UsableHolderSO> _requiredUsableHolderSOList;
 
+    private void OnDishOutCallback(object sender, DishOutEventArgs args) => this.OnDishOut?.Invoke(sender, args);
+
     void Awake(){
-        FixedString128Bytes[] targetDishesSOStrKeys = new FixedString128Bytes[this._targetDishesSO.Length];
-        for (int i = 1; i < targetDishesSOStrKeys.Length; i++){
-            targetDishesSOStrKeys[i] = this._targetDishesSO[i].StrKey;
-            Debug.Log(this._targetDishesSO[i]);}
-        this.TargetDishesSOStrKeys = new NetworkList<FixedString128Bytes>(targetDishesSOStrKeys, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+        this.TargetDishesSOStrKeys = new NetworkList<FixedString128Bytes>(new FixedString128Bytes[10], NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
         this._mapGenerator = new ServerMapGenerator();
     }
 
-    public void GenerateMapArray(){
+    public void GenerateMap(CombinableSO[] targetDishesSO){
         if (!this.IsServer) return;
 
+        this._targetDishesSO = targetDishesSO;
+
         this.TargetDishesAmount.Value = this._targetDishesSO.Length;
+		//for (int i = 1; i < this._targetDishesSO.Length; i++){
+		//	this.TargetDishesSOStrKeys[i] = this._targetDishesSO[i].StrKey;
+		//	Debug.Log(this._targetDishesSO[i]);
+		//}
         foreach (CombinableSO targetDish in this._targetDishesSO)
             TargetDishesSOStrKeys.Add(new FixedString128Bytes(targetDish.StrKey));
 
-        this.IdentifyRquiredInteractableList(this._targetDishesSO, out this._requiredCombinableSOList, out this._requiredUsableHolderSOList);
+
+		this.IdentifyRquiredInteractableList(this._targetDishesSO, out this._requiredCombinableSOList, out this._requiredUsableHolderSOList);
 
         int spawnAmount = this._requiredCombinableSOList.Count > this._minSpawnAmount ? this._requiredCombinableSOList.Count : this._minSpawnAmount;
         int utilityAmount = this._requiredUsableHolderSOList.Count > this._minUtilityAmount ? this._requiredUsableHolderSOList.Count : this._minUtilityAmount;
@@ -53,11 +61,17 @@ public class ServerMapManager: NetworkBehaviour
         this._mapCellState = this._mapGenerator.GenerateMapArray(this._mapXSize, this._mapYSize, utilityAmount, spawnAmount, this._toolAmount, this._interactableGroupAmount);
     }
 
-    public void PopulateMap(){
+	public void DespawnMap(){
+		this.OnMapDespawn?.Invoke(this, EventArgs.Empty);
+	}
+
+	public void SpawnMap(){
         if (!this.IsServer) return;
 
         int spawnableIdx = 0;
         int utilityIdx = 0;
+        ServerInteractable curInteractable;
+
         HelperFunc.Shuffle(this._requiredCombinableSOList);
 
         for (int x = 0; x < _mapXSize; x++){
@@ -72,7 +86,8 @@ public class ServerMapManager: NetworkBehaviour
                         ServerTable tableServer = tableOnly.GetComponent<ServerTable>();
                         tableServer.InfoInit(this._basicComponentSO.TableSO);
                         tableServer.GetComponent<NetworkObject>().Spawn();
-                        break;
+                        this.OnMapDespawn += tableServer.OnMapDespawn;
+						break;
                     case CellState.Utility:
                         GameObject stationeryUtility = Instantiate(this._mapComponentPrefabs.UtilityPrefab, this.GetWorldCoor(x, y), Quaternion.identity);
 
@@ -81,7 +96,8 @@ public class ServerMapManager: NetworkBehaviour
                         utilityIdx = (utilityIdx+1) % this._requiredUsableHolderSOList.Count;
 
                         stationeryUtilityServer.NetworkObjectBuf.Spawn();
-                        break;
+						this.OnMapDespawn += stationeryUtilityServer.OnMapDespawn;
+						break;
                     case CellState.IngredientSpawn:
                         GameObject spawnable = Instantiate(this._mapComponentPrefabs.SpawnablePrefab, this.GetWorldCoor(x, y), Quaternion.identity);
 
@@ -91,26 +107,33 @@ public class ServerMapManager: NetworkBehaviour
                         spawnableIdx = (spawnableIdx+1) % this._requiredCombinableSOList.Count;
 
                         spawnableServer.NetworkObjectBuf.Spawn();
-                        break;
+						this.OnMapDespawn += spawnableServer.OnMapDespawn;
+						break;
                     case CellState.Tool:
                         GameObject table = Instantiate(this._mapComponentPrefabs.TablePrefab, this.GetWorldCoor(x, y), Quaternion.identity);
                         tableServer = table.GetComponent<ServerTable>();
                         tableServer.InfoInit(this._basicComponentSO.TableSO);
                         table.GetComponent<NetworkObject>().Spawn();
+						this.OnMapDespawn += tableServer.OnMapDespawn;
 
-                        tableServer = table.GetComponent<ServerTable>();
+						tableServer = table.GetComponent<ServerTable>();
                         ServerTool toolServer = Instantiate(this._mapComponentPrefabs.ToolPrefab, this.GetWorldCoor(x, y), Quaternion.identity).GetComponent<ServerTool>();
                         // TODO: toolServer.InfoInit(xxx);
                         toolServer.NetworkObjectBuf.Spawn();
                         this._interactions.PlaceToServerInternal(toolServer, tableServer);
-                        break;
+
+						this.OnMapDespawn += toolServer.OnMapDespawn;
+						break;
                     case CellState.DishExit:
                         GameObject dishExit = Instantiate(this._mapComponentPrefabs.DishExitPrefab, this.GetWorldCoor(x, y), Quaternion.identity);
 
                         ServerDishExit dishExitServer = dishExit.GetComponent<ServerDishExit>();
                         dishExitServer.InfoInit(this._basicComponentSO.DishExitSO);
                         dishExitServer.GetComponent<NetworkObject>().Spawn();
-                        break;
+
+						this.OnMapDespawn += dishExitServer.OnMapDespawn;
+                        dishExitServer.OnDishOut += this.OnDishOutCallback;
+						break;
                     default:
                         Debug.LogWarning(String.Format("invalid CellState found when populating map, x:{0}, y:{1}", x, y));
                         break;

@@ -30,6 +30,7 @@ public abstract class CombinableSO: GrabbableSO{
     private HashSet<CombinableSO> _existingCombinableTo { get; } = new HashSet<CombinableSO>();
 
     public bool IsFinalCombinable => this._isFinalCombinable;
+    public int InteractablesRequired => this.StrKeyList.Count;
     public bool CanCombineWith(CombinableSO targetCombinableSO) => this._existingCombinableTo.Contains(targetCombinableSO);
     public static new CombinableSO GetSO(string strKey) => (CombinableSO)InteractableSO.GetSO(strKey);
     public static new CombinableSO TryGetSO(string strKey) => (CombinableSO)InteractableSO.TryGetSO(strKey);

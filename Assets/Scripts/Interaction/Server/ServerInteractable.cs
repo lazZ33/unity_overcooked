@@ -38,12 +38,15 @@ public class ServerInteractable: NetworkBehaviour{
         this.NetworkObjectReferenceBuf = new NetworkObjectReference(this.NetworkObjectBuf);
     }
 
+    public void OnMapDespawn(object sender, EventArgs args){
+        this.NetworkObjectBuf.Despawn();
+    }
+
     public void InfoInit(InteractableSO info){
         if (this.IsSpawned){
             Debug.LogError("Attempt to initialize info after an object have network spawned");
             return;
         }
-        print("InfoInit");
 
         this._info = info;
     }
