@@ -133,13 +133,14 @@ public class ServerInteractionManager: NetworkBehaviour{
                     grabbingControl.OnUseServerInternal(targetUsableHolder.Info.name);
                 }
                 break;
-            case ServerDishExit targetScoringExit:
+            case ServerDishExit targetDishExit:
                 switch(targetGrabbable){
                     case ServerCombinable targetCombinable:
-                        if (targetCombinable.IsFinalCombinable)
-                            targetHolder.OnPlaceServerInternal(targetGrabbable);
-                            targetGrabbable.OnPlaceToServerInternal(targetHolder);
+                        if (targetCombinable.IsFinalCombinable){
+                            targetGrabbable.OnPlaceToServerInternal(targetDishExit);
                             grabbingControl.OnDropPlaceServerInternal();
+                            targetDishExit.OnPlaceServerInternal(targetGrabbable);
+                        }
                         break;
                 }
                 break;

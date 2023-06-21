@@ -8,12 +8,14 @@ using Unity.Netcode;
 public class ServerDishExit: ServerHolder{
 
     private new ClientDishExit _client => (ClientDishExit)base._client;
-    public new DishExitSO Info { get { return (DishExitSO)base._info; } set { base._info = value; } }
+    private new DishExitSO _info { get { return (DishExitSO)base._info; } set { base._info = value; } }
+    public new DishExitSO Info => (DishExitSO)base._info;
 
     public event EventHandler<DishOutEventArgs> OnDishOut;
 
     internal override void OnPlaceServerInternal(ServerGrabbable targetGrabbable){
         base.OnPlaceServerInternal(targetGrabbable);
+        print("OnPlaceServerInternal: ServerDishExit");
 
         this.OnDishOut?.Invoke(this, new DishOutEventArgs(targetGrabbable.Info));
 

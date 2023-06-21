@@ -70,14 +70,14 @@ public class ServerMapManager: NetworkBehaviour
                         GameObject tableOnly = Instantiate(this._mapComponentPrefabs.TablePrefab, this.GetWorldCoor(x, y), Quaternion.identity);
 
                         ServerTable tableServer = tableOnly.GetComponent<ServerTable>();
-                        tableServer.Info = this._basicComponentSO.TableSO;
+                        tableServer.InfoInit(this._basicComponentSO.TableSO);
                         tableServer.GetComponent<NetworkObject>().Spawn();
                         break;
                     case CellState.Utility:
                         GameObject stationeryUtility = Instantiate(this._mapComponentPrefabs.UtilityPrefab, this.GetWorldCoor(x, y), Quaternion.identity);
 
                         ServerUsableHolder stationeryUtilityServer = stationeryUtility.GetComponent<ServerUsableHolder>();
-                        stationeryUtilityServer.Info = this._requiredUsableHolderSOList[utilityIdx];
+                        stationeryUtilityServer.InfoInit(this._requiredUsableHolderSOList[utilityIdx]);
                         utilityIdx = (utilityIdx+1) % this._requiredUsableHolderSOList.Count;
 
                         stationeryUtilityServer.NetworkObjectBuf.Spawn();
@@ -87,7 +87,7 @@ public class ServerMapManager: NetworkBehaviour
 
                         ServerSpawnable spawnableServer = spawnable.GetComponent<ServerSpawnable>();
                         spawnableServer.SpawnningCombinableInfo = this._requiredCombinableSOList[spawnableIdx];
-                        spawnableServer.Info = this._basicComponentSO.SpawnableSO;
+                        spawnableServer.InfoInit(this._basicComponentSO.SpawnableSO);
                         spawnableIdx = (spawnableIdx+1) % this._requiredCombinableSOList.Count;
 
                         spawnableServer.NetworkObjectBuf.Spawn();
@@ -95,12 +95,12 @@ public class ServerMapManager: NetworkBehaviour
                     case CellState.Tool:
                         GameObject table = Instantiate(this._mapComponentPrefabs.TablePrefab, this.GetWorldCoor(x, y), Quaternion.identity);
                         tableServer = table.GetComponent<ServerTable>();
-                        tableServer.Info = this._basicComponentSO.TableSO;
+                        tableServer.InfoInit(this._basicComponentSO.TableSO);
                         table.GetComponent<NetworkObject>().Spawn();
 
                         tableServer = table.GetComponent<ServerTable>();
                         ServerTool toolServer = Instantiate(this._mapComponentPrefabs.ToolPrefab, this.GetWorldCoor(x, y), Quaternion.identity).GetComponent<ServerTool>();
-                        // TODO: toolServer.Info = xxx;
+                        // TODO: toolServer.InfoInit(xxx);
                         toolServer.NetworkObjectBuf.Spawn();
                         this._interactions.PlaceToServerInternal(toolServer, tableServer);
                         break;
@@ -108,7 +108,7 @@ public class ServerMapManager: NetworkBehaviour
                         GameObject dishExit = Instantiate(this._mapComponentPrefabs.DishExitPrefab, this.GetWorldCoor(x, y), Quaternion.identity);
 
                         ServerDishExit dishExitServer = dishExit.GetComponent<ServerDishExit>();
-                        dishExitServer.Info = this._basicComponentSO.DishExitSO;
+                        dishExitServer.InfoInit(this._basicComponentSO.DishExitSO);
                         dishExitServer.GetComponent<NetworkObject>().Spawn();
                         break;
                     default:

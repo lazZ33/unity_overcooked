@@ -15,13 +15,13 @@ public class ServerUtensil: ServerGrabbable, IHolder{
     public bool IsHoldingGrabbable => this.HoldGrabbable != null;
 
     internal void OnPlaceServerInternal(ServerGrabbable targetGrabbable){
-        print("OnUtensilPlaceServerInternal");
+        print("OnPlaceServerInternal");
 
         this.HoldGrabbable = targetGrabbable;
     }
 
     internal void OnTakeServerInternal(out ServerGrabbable takenGrabbable){
-        print("OnUtensilTakeServerInternal");
+        print("OnTakeServerInternal");
         takenGrabbable = this.HoldGrabbable;
         this.HoldGrabbable = null;
     }

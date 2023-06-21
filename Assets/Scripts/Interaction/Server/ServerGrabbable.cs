@@ -7,6 +7,8 @@ using Unity.Netcode;
 
 public class ServerGrabbable: ServerInteractable{
 
+    [SerializeField] private LayerMask _grabbedLayerMask;
+    [SerializeField] private LayerMask _grabbableLayerMask;
     private new ClientGrabbable _client => (ClientGrabbable)base._client;
     private new GrabbableSO _info { get{ return (GrabbableSO)base._info; } set{ base._info = value; } }
     public new GrabbableSO Info => (GrabbableSO)base._client.Info;
@@ -27,34 +29,31 @@ public class ServerGrabbable: ServerInteractable{
         if (this.IsGrabbedByPlayer) return;
         print("OnGrabServerInternal");
 
-        this.gameObject.layer = LayerMask.NameToLayer("GrabbedGrabbable");
+        this.gameObject.layer = this._grabbedLayerMask;
         this._grabbedClientId.Value = grabbingControl.OwnerClientId;
 
         this.OnGrab?.Invoke(this, new GrabDropEventArgs(this._info, grabbingControl));
         this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnGrab);
-        print("grabbed");
     }
     internal void OnGrabServerInternal(ServerUtensil targetUtensil){
         if (this.IsGrabbedByPlayer) return;
         print("OnGrabServerInternal");
 
-        this.gameObject.layer = LayerMask.NameToLayer("GrabbedGrabbable");
+        this.gameObject.layer = this._grabbedLayerMask;
         this._grabbedClientId.Value = ServerGrabbable.GRABBED_CLIENT_DEFAULT;
 
         this.OnGrab?.Invoke(this, new GrabDropEventArgs(this._info, targetUtensil));
         this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnGrab);
-        print("grabbed");
     }
 
     internal void OnDropServerInternal(){
         print("OnDropServerInternal");
 
-        this.gameObject.layer = LayerMask.NameToLayer("Interactable");
+        this.gameObject.layer = this._grabbableLayerMask;
         this._grabbedClientId.Value = ServerGrabbable.GRABBED_CLIENT_DEFAULT;
 
         this.OnDrop?.Invoke(this, new GrabDropEventArgs(this._info, null));
         this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnDrop);
-        print("Dropped");
     }
 
     internal void OnTakeServerInternal(ServerPlayerGrabbingControl grabbingControl){
@@ -64,18 +63,16 @@ public class ServerGrabbable: ServerInteractable{
 
         this.OnTake?.Invoke(this, new GrabDropEventArgs(this._info, null));
         this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnTake);
-        print("Taken");
     }
 
     internal void OnPlaceToServerInternal(ServerHolder targetHolder){
         print("OnPlaceToServerInternal");
 
-        this.gameObject.layer = LayerMask.NameToLayer("GrabbedGrabbable");
+        this.gameObject.layer = this._grabbedLayerMask;
         this._grabbedClientId.Value = ServerGrabbable.GRABBED_CLIENT_DEFAULT;
 
         this.OnPlace?.Invoke(this, new GrabDropEventArgs(this._info, targetHolder));
         this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnPlace);
-        print("Placed");
     }
 
 

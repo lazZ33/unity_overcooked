@@ -22,4 +22,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2852e49e42e71aa4aa3443d53f8ac8fe, type: 2}
   - {fileID: 11400000, guid: 62b7b78de4c42ec4ab752c9f03705303, type: 2}
   RequiredUsableHolder: {fileID: 0}
-  _isFinalCombinable: 0
+  _isFinalCombinable: 1

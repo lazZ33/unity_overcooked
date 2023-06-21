@@ -15,9 +15,10 @@ public class ServerUsableHolder : ServerHolder, IUsable
     private double OnUsingLastUpdateTime;
 
     private new ClientUsableHolder _client => (ClientUsableHolder)base._client;
-    public new UsableHolderSO Info { get { return (UsableHolderSO)base._info; } set { base._info = value; } }    
+    private new UsableHolderSO _info { get { return (UsableHolderSO)base._info; } set { base._info = value; } }
+    public new UsableHolderSO Info => this._info;
     private double UseHoldCurTime => Time.fixedUnscaledTimeAsDouble;
-    internal bool IsHoldToUse => (this.Info).IsHoldToUse;
+    internal bool IsHoldToUse => this.Info.IsHoldToUse;
     private bool _isHoldingUse => UseHoldStartTime != 0;
 
     protected override void Awake(){
@@ -44,7 +45,7 @@ public class ServerUsableHolder : ServerHolder, IUsable
 
     void IUsable.OnUseServerInternal(){
         if (!this.IsHoldingGrabbable | !this.HoldGrabbable.CanPlaceOn(this) | this.Info.IsHoldToUse | this._isHoldingUse) return;
-        print("OnUseHoldServerInternal");
+        print("OnUseServerInternal");
         
         this.UseHoldStartTime = this.UseHoldCurTime;
         this.OnUnuse?.Invoke(this, new UseEventArgs(this.HoldGrabbable.Info));
@@ -53,7 +54,7 @@ public class ServerUsableHolder : ServerHolder, IUsable
     }
     void IUsable.OnUnuseServerInternal(){
         if (!this._isHoldingUse) return;
-        print("OnUseHoldServerInternal");
+        print("OnUnuseServerInternal");
         
         this.UseHoldStartTime = 0;
         this.OnUnuse?.Invoke(this, new UseEventArgs(this.HoldGrabbable.Info));

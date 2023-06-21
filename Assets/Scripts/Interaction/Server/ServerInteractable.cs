@@ -4,6 +4,8 @@ using System;
 using Unity.Collections;
 using UnityEngine;
 using Unity.Netcode;
+using Codice.Client.Common.GameUI;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 public class ServerInteractable: NetworkBehaviour{
 
@@ -34,6 +36,16 @@ public class ServerInteractable: NetworkBehaviour{
             this.OnInfoChange?.Invoke(this, new InfoChangeEventArgs(this._info));
         }
         this.NetworkObjectReferenceBuf = new NetworkObjectReference(this.NetworkObjectBuf);
+    }
+
+    public void InfoInit(InteractableSO info){
+        if (this.IsSpawned){
+            Debug.LogError("Attempt to initialize info after an object have network spawned");
+            return;
+        }
+        print("InfoInit");
+
+        this._info = info;
     }
 
     internal virtual void SetInfoServerInternal(string infoStrKey){

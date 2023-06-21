@@ -3,7 +3,7 @@ using UnityEngine;
 using Unity.Collections;
 using System;
 
-public class ClientUsableHolderVisuals: ClientInteractablePhysics{
+public class ClientUsableHolderVisuals: ClientInteractableVisuals{
 
     [SerializeField] private ClientUsableHolder _stationeryUtilityControl;
     [SerializeField] private MeshFilter _meshFilter;

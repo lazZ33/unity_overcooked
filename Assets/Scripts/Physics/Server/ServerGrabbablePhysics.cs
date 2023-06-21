@@ -18,7 +18,6 @@ public class ServerGrabbablePhysics: ServerInteractablePhysics{
     }
 
     private void OnGrab(object sender, GrabDropEventArgs args){
-        print("OnGrab: ServerGrabbablePhysics");
         ServerPlayerGrabbingControl grabbingControl = (ServerPlayerGrabbingControl)args.Object;
         ServerGrabbable grabbableControl = (ServerGrabbable)sender;
 
@@ -32,7 +31,6 @@ public class ServerGrabbablePhysics: ServerInteractablePhysics{
     }
 
     private void OnDrop(object sender, GrabDropEventArgs args){
-        print("OnDrop: ServerGrabbablePhysics");
         ServerGrabbable grabbableControl = (ServerGrabbable)sender;
 
         this._rigidBody.useGravity = true;
@@ -47,7 +45,6 @@ public class ServerGrabbablePhysics: ServerInteractablePhysics{
     // }
 
     private void OnPlace(object sender, GrabDropEventArgs args){
-        print("OnPlace: ServerGrabbablePhysics");
         ServerGrabbable grabbableControl = (ServerGrabbable)sender;
         ServerHolder targetHolder = (ServerHolder)args.Object;
 

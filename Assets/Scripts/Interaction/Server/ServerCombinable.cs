@@ -24,7 +24,6 @@ public class ServerCombinable: ServerGrabbable{
 
         this.OnCombine?.Invoke(this, new GrabDropEventArgs(this._info, removedCombinable));
         this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnCombine);
-        print("Combined");
     }
 
 }

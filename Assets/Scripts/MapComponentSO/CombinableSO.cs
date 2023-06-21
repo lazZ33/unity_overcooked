@@ -142,6 +142,7 @@ public abstract class CombinableSO: GrabbableSO{
         // Add basic interactables
         InteractableSO._existingInteractable.Add("Table", InteractableSO.GetSO("Table"));
         InteractableSO._existingInteractable.Add("Spawn", InteractableSO.GetSO("Spawn"));
+        InteractableSO._existingInteractable.Add("DishExit", InteractableSO.GetSO("DishExit"));
 
         InteractableSO.UnloadAllSO();
 
