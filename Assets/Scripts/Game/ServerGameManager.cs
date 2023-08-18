@@ -11,7 +11,7 @@ using Codice.Client.Common.GameUI;
 public class ServerGameManager: NetworkBehaviour{
 
     [SerializeField] private ClientGameManager _client;
-    [SerializeField] private CombinableSO[] _targetDishes;
+    [SerializeField] private ICombinableSO[] _targetDishes;
     [SerializeField] private ServerMapManager _mapManger;
     [SerializeField] private double _gameDurationInit;
     [SerializeField] private double _newOrderTimeInterval;
@@ -68,9 +68,10 @@ public class ServerGameManager: NetworkBehaviour{
 
     private void AddNewRandomOrder(out Order newOrder){
         if (!this.IsServer) { newOrder = null;  return; }
+        print("AddNewRandomOrder");
 
         int randomIdx = (int)(UnityEngine.Random.value) * int.MaxValue % this._targetDishes.Length;
-        CombinableSO newRandomTargetDish = this._targetDishes[randomIdx];
+        ICombinableSO newRandomTargetDish = this._targetDishes[randomIdx];
         double newOrderWarningTime = ServerGameManager.CurGameTime + this._orderWarningTime;
         double newOrderOverdueTime = ServerGameManager.CurGameTime + this._orderOverdueTime;
 

@@ -3,7 +3,7 @@ using Unity.Netcode;
 using System;
 using System.Collections.Generic;
 
-public class HelperFunc{
+public static class HelperFunc{
     private static System.Random rng = new System.Random();
 
     public static T dereference<T>(NetworkObjectReference reference){

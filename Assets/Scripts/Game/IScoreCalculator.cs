@@ -2,6 +2,6 @@ using Unity;
 using System;
 
 internal interface IScoreCalculator{
-	internal int GetScoreGain(CombinableSO targetCombinable);
-	internal int GetScoreLoss(CombinableSO targetCombinable);
+	internal int GetScoreGain(ICombinableSO targetCombinable);
+	internal int GetScoreLoss(ICombinableSO targetCombinable);
 }

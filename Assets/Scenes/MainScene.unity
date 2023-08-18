@@ -1484,10 +1484,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38dc4de508145814b8fb480eeb18ed4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uiDocument: {fileID: 602070984}
+  _gameUI: {fileID: 602070984}
+  _orderListItemTemplate: {fileID: 9197481963319205126, guid: 33ad1fb1c61d44a47aabefb73621985c, type: 3}
+  _recipeImageListItemTemplate: {fileID: 9197481963319205126, guid: bf70a9ab96429a4418f5b8c69f7f6d20, type: 3}
   _gameManager: {fileID: 906555076}
   _scoreLabelName: Score
   _timeLabelName: TimeLeft
+  _orderListName: OrderList
+  _dishImageName: DishImage
+  _recipeImageListName: RecipeImageList
 --- !u!114 &602070987
 MonoBehaviour:
   m_ObjectHideFlags: 0

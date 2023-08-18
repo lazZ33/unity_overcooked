@@ -1,7 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:VisualElement style="width: 100%; height: 100%; flex-direction: column; justify-content: space-between;">
+    <ui:VisualElement name="GameView" style="width: 100%; height: 100%; flex-direction: column; justify-content: space-between;">
         <ui:VisualElement name="Top" style="width: 100%; height: 20%;">
-            <ui:ScrollView name="OrderList" style="width: 50%; height: 100%;" />
+            <ui:ScrollView name="OrderList" style="width: 50%; height: 100%; align-items: center; justify-content: flex-start; flex-direction: row; flex-wrap: nowrap;" />
         </ui:VisualElement>
         <ui:VisualElement name="Bottom" style="width: 100%; height: 20%; flex-direction: row; align-items: flex-start; flex-wrap: nowrap; justify-content: space-between;">
             <ui:VisualElement name="ScoreBoard" style="width: 20%; height: 100%; align-items: center; justify-content: space-around; flex-direction: column; top: auto; right: auto; bottom: 0; left: 0;">

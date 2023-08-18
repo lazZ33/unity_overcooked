@@ -49,8 +49,8 @@ public class ServerGrabbablePhysics: ServerInteractablePhysics{
         ServerHolder targetHolder = (ServerHolder)args.Object;
 
         grabbableControl.NetworkObjectBuf.TrySetParent(targetHolder.transform, false);
-        this.transform.localPosition = targetHolder.Info.LocalPlacePoint;
-        this.transform.localPosition = targetHolder.Info.LocalPlacePoint;
+        this.transform.localPosition = targetHolder.Info.LocalPlacePosition;
+        this.transform.localPosition = targetHolder.Info.LocalPlacePosition;
 
         this._rigidBody.useGravity = false;
         this._rigidBody.constraints = RigidbodyConstraints.FreezeAll;

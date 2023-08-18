@@ -18,7 +18,9 @@ MonoBehaviour:
   _placeableTo: []
   _compatibleUtensils: []
   _combinableTo: []
-  RequiredCombinables:
-  - {fileID: 11400000, guid: 1d026d16aa2c79042909629ab43186d9, type: 2}
+  _requiredCombinables:
   - {fileID: 11400000, guid: 1a41689a6981ce3498adeb506f95bd7f, type: 2}
-  RequiredStationeryUtility: {fileID: 0}
+  - {fileID: 11400000, guid: 1d026d16aa2c79042909629ab43186d9, type: 2}
+  _requiredUsableHolder: {fileID: 0}
+  _isFinalCombinable: 1
+  _displaySprite: {fileID: 0}

@@ -5,22 +5,27 @@ using UnityEngine.UIElements;
 
 public class ClientGameUI : NetworkBehaviour
 {
-    [SerializeField] private UIDocument _uiDocument;
+    [SerializeField] private UIDocument _gameUI;
+    [SerializeField] private VisualTreeAsset _orderListItemTemplate;
+    [SerializeField] private VisualTreeAsset _recipeImageListItemTemplate;
     [SerializeField] private ClientGameManager _gameManager;
     [SerializeField] private string _scoreLabelName;
     [SerializeField] private string _timeLabelName;
     [SerializeField] private string _orderListName;
+    [SerializeField] private string _dishImageName;
+    [SerializeField] private string _recipeImageListName;
     
     private Label _scoreText;
     private Label _timerText;
     private ScrollView _orderList;
 
     void Start(){
-        this._scoreText = this._uiDocument.rootVisualElement.Q<Label>(this._scoreLabelName);
-        this._timerText = this._uiDocument.rootVisualElement.Q<Label>(this._timeLabelName);
-        this._orderList = this._uiDocument.rootVisualElement.Q<ScrollView>(this._orderListName);
+        this._scoreText = this._gameUI.rootVisualElement.Q<Label>(this._scoreLabelName);
+        this._timerText = this._gameUI.rootVisualElement.Q<Label>(this._timeLabelName);
+        this._orderList = this._gameUI.rootVisualElement.Q<ScrollView>(this._orderListName);
 
-        this._gameManager.OnScoreChange += this.OnScoreChange;
+		this._gameManager.OnScoreChange += this.OnScoreChange;
+        this._gameManager.OnNewOrder += this.OnNewOrder;
 
         this._timerText.text = ((int)(ServerGameManager.TimeLeft / 60)).ToString() + ": " + ((int)(ServerGameManager.TimeLeft % 60)).ToString();
     }
@@ -31,6 +36,27 @@ public class ClientGameUI : NetworkBehaviour
 
     void OnScoreChange(object sender, ScoreChangeEventArgs args) {
         this._scoreText.text = "Score: " + args.CurrentScore.ToString();
+    }
+
+    void OnNewOrder(object sender, OrderListChangeEventArgs args){
+        print("OnNewOrder: ClientGameGUI");
+
+        Sprite dishImage = args.RequestedDish.DisplaySprite;
+
+        TemplateContainer newOrderItemVisual = this._orderListItemTemplate.CloneTree();
+        VisualElement dishImageHolder = newOrderItemVisual.Q<VisualElement>(this._dishImageName);
+        VisualElement recipeImageList = newOrderItemVisual.Q<ScrollView>(this._recipeImageListName);
+
+		dishImageHolder.style.backgroundImage = new StyleBackground(dishImage);
+
+        foreach (CombinableSO requiredCombinable in args.RequestedDish.RequiredCombinables){
+            TemplateContainer newRecipeImageItemVisual = this._recipeImageListItemTemplate.CloneTree();
+
+            newRecipeImageItemVisual.style.backgroundImage = new StyleBackground(requiredCombinable.DisplaySprite);
+            recipeImageList.Add(newRecipeImageItemVisual);
+        }
+
+		this._orderList.Add(newOrderItemVisual);
     }
 
 }

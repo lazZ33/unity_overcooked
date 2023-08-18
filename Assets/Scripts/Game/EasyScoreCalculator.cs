@@ -2,12 +2,12 @@ using Unity;
 using System;
 
 public class EasyScoreCalculator : IScoreCalculator{
-	int IScoreCalculator.GetScoreGain(CombinableSO targetCombinable){
-		return targetCombinable.InteractablesRequired * 3;
+	int IScoreCalculator.GetScoreGain(ICombinableSO targetCombinable){
+		return targetCombinable.RequiredCombinables.Length * 3;
 	}
 
-	int IScoreCalculator.GetScoreLoss(CombinableSO targetCombinable)
+	int IScoreCalculator.GetScoreLoss(ICombinableSO targetCombinable)
 	{
-		return targetCombinable.InteractablesRequired;
+		return targetCombinable.RequiredCombinables.Length;
 	}
 }

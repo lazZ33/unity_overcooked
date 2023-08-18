@@ -7,14 +7,14 @@ using Unity.Netcode;
 using Unity.Collections;
 
 internal class Order{
-    internal Order(CombinableSO requestedDish, double warningTime, double overdueTime, IScoreCalculator scoreCalculator){
+    internal Order(ICombinableSO requestedDish, double warningTime, double overdueTime, IScoreCalculator scoreCalculator){
         this.RequestedDish = requestedDish;
         this.WarningTime = warningTime;
         this.OverdueTime = overdueTime;
         this.ScoreGain = scoreCalculator.GetScoreGain(requestedDish);
         this.ScoreLoss = scoreCalculator.GetScoreLoss(requestedDish);
     }
-    public CombinableSO RequestedDish;
+    public ICombinableSO RequestedDish;
     public double WarningTime;
     public double OverdueTime;
     public int ScoreGain;

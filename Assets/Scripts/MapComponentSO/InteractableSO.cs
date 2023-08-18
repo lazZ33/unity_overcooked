@@ -2,11 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using Unity.Netcode;
+using Unity.Netcode.Components;
+using Unity.Collections;
 
 [Serializable]
-public abstract class InteractableSO: ScriptableObject{
-
+public abstract class InteractableSO: ScriptableObject
+{
     [SerializeField] private Mesh _mesh;
     public Mesh Mesh => this._mesh;
     [SerializeField] private Mesh _meshCollider;
@@ -27,17 +30,17 @@ public abstract class InteractableSO: ScriptableObject{
 
         allInteractableSO = Resources.LoadAll<InteractableSO>("InteractableSO/Holder");
         foreach (InteractableSO currentInteractableSO in allInteractableSO){
-            _allInteractable.Add(currentInteractableSO.StrKey, currentInteractableSO);
+            _allInteractable.TryAdd(currentInteractableSO.StrKey, currentInteractableSO);
         }
 
         allInteractableSO = Resources.LoadAll<InteractableSO>("InteractableSO/Spawnable");
         foreach (InteractableSO currentInteractableSO in allInteractableSO){
-            _allInteractable.Add(currentInteractableSO.StrKey, currentInteractableSO);
+            _allInteractable.TryAdd(currentInteractableSO.StrKey, currentInteractableSO);
         }
 
         allInteractableSO = Resources.LoadAll<InteractableSO>("InteractableSO/Utensil");
         foreach (InteractableSO currentInteractableSO in allInteractableSO){
-            _allInteractable.Add(currentInteractableSO.StrKey, currentInteractableSO);
+            _allInteractable.TryAdd(currentInteractableSO.StrKey, currentInteractableSO);
         }
     }
 
@@ -57,5 +60,4 @@ public abstract class InteractableSO: ScriptableObject{
         if (result == null) InteractableSO._allInteractable.TryGetValue(strKey, out result);
         return result;
     }
-
 }

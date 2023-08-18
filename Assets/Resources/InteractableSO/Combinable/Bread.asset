@@ -19,9 +19,7 @@ MonoBehaviour:
   _compatibleUtensils: []
   _combinableTo:
   - {fileID: 11400000, guid: 1d026d16aa2c79042909629ab43186d9, type: 2}
-  - {fileID: 11400000, guid: 3140da2c98f8c9943b2fe6a62445be2a, type: 2}
-  - {fileID: 11400000, guid: fd3e50c160082e74ab32554620f38610, type: 2}
-  - {fileID: 11400000, guid: cb7d4e894adaf3746b0e1a1bb1958ad7, type: 2}
-  RequiredCombinables: []
-  RequiredUsableHolder: {fileID: 0}
+  _requiredCombinables: []
+  _requiredUsableHolder: {fileID: 0}
   _isFinalCombinable: 0
+  _displaySprite: {fileID: 0}

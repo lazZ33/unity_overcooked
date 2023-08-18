@@ -18,23 +18,23 @@ public class ClientGameManager: NetworkBehaviour{
 
     [ClientRpc]
     internal void GameStateChangeCallbackClientRpc(string strKey, int previousScore, int currentScore, GameStateChangeCallbackID id){
-        CombinableSO newTargetDish;
+        ICombinableSO newTargetDish;
 
         switch(id){
             case GameStateChangeCallbackID.OnFinishedOrder:
-                newTargetDish = CombinableSO.GetSO(strKey);
+                newTargetDish = ICombinableSO.GetSO(strKey);
                 this.OnFinishedOrder?.Invoke(this, new OrderListChangeEventArgs(newTargetDish));
                 break;
             case GameStateChangeCallbackID.OnNewOrder:
-                newTargetDish = CombinableSO.GetSO(strKey);
+                newTargetDish = ICombinableSO.GetSO(strKey);
                 this.OnNewOrder?.Invoke(this, new OrderListChangeEventArgs(newTargetDish));
                 break;
             case GameStateChangeCallbackID.OnOrderOverdue:
-                newTargetDish = CombinableSO.GetSO(strKey);
+                newTargetDish = ICombinableSO.GetSO(strKey);
                 this.OnOrderOverdue?.Invoke(this, new OrderListChangeEventArgs(newTargetDish));
                 break;
             case GameStateChangeCallbackID.OnOrderWarning:
-                newTargetDish = CombinableSO.GetSO(strKey);
+                newTargetDish = ICombinableSO.GetSO(strKey);
                 this.OnOrderWarning?.Invoke(this, new OrderListChangeEventArgs(newTargetDish));
                 break;
             case GameStateChangeCallbackID.OnScoreChange:

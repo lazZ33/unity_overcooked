@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
-<engine:UXML
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:engine="UnityEngine.UIElements"
-    xmlns:editor="UnityEditor.UIElements"
-    xsi:noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd"
->
-    
-</engine:UXML>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="Frame" style="width: 50px; height: 100px; background-image: none; -unity-text-outline-color: rgb(56, 56, 56); align-items: center; justify-content: flex-start; left: 5px; top: 5px;">
+        <ui:VisualElement name="OrderBackground" style="width: 100%; height: 50%; align-items: center; justify-content: center; background-image: url(&apos;project://database/Assets/3rdParties/2D%20Casual%20UI/Sprite/GUI.png?fileID=21300056&amp;guid=1eaee135ce037439d925cee5e41ce026&amp;type=3#GUI_28&apos;);">
+            <ui:VisualElement name="DishImage" style="width: 50%; align-items: center; justify-content: center; height: 50%;" />
+        </ui:VisualElement>
+        <ui:ScrollView name="RecipeImageList" style="width: 40%; height: auto; align-items: flex-end; justify-content: flex-end;" />
+    </ui:VisualElement>
+</ui:UXML>
