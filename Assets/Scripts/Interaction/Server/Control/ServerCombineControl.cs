@@ -29,10 +29,7 @@ internal class ServerCombineControl: ServerInteractControl
 
 
 	internal void OnCombineServerInternal(){
-        print("OnCombineServerInternal");
-
         this.OnCombine?.Invoke(this, new CombineEventArgs(this._info));
         // this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnCombine);
-        print("Combined");
     }
 }

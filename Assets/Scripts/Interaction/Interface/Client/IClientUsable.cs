@@ -2,14 +2,14 @@ using System;
 
 public interface IClientUsable : IClientInteractable
 {
-	public new IUsableSO Info { get; }
+	public new IConverterSO Info { get; }
 
 
-	public event EventHandler<ServerUseEventArgs> OnUse;
-	public event EventHandler<ServerUseEventArgs> OnUsing;
-	public event EventHandler<ServerUseEventArgs> OnUnuse;
-	public event EventHandler<ServerUseEventArgs> OnConvert;
+	public event EventHandler<ClientUseEventArgs> OnUse;
+	public event EventHandler<ClientUseEventArgs> OnUsing;
+	public event EventHandler<ClientUseEventArgs> OnUnuse;
+	public event EventHandler<ClientUseEventArgs> OnConvert;
 
 
-	internal bool IsHoldToUse { get; }
+	internal bool IsHoldToConvert { get; }
 }

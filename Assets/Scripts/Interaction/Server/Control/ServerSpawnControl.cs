@@ -18,6 +18,8 @@ internal class ServerSpawnControl : ServerInteractControl
 	public event EventHandler<SpawnEventArgs> OnSpawn;
 
 
+	private EventHandler _onMapDespawn;
+
 	// builder DI
 	internal class SpawnControlInitArgs: InteractControlInitArgs
 	{
@@ -29,6 +31,10 @@ internal class ServerSpawnControl : ServerInteractControl
 	}
 
 
+	internal void OnMapDespawn()
+	{
+		this._onMapDespawn?.Invoke(this, EventArgs.Empty);
+	}
 	internal IServerGrabbable OnSpawnServerInternal(){
         // spawn target object
         GameObject newGrabbableObject = Instantiate(this._grabbablePrefab, this._info.SpawnningPosition, this._info.SpawnningRotation);
@@ -36,8 +42,10 @@ internal class ServerSpawnControl : ServerInteractControl
 		newGrabbableControl.NetworkObjectBuf.Spawn(true);
 		newGrabbableControl.SetInfoServerInternal(this.SpawnningGrabbableInfo);
 
+		// setup despawn callback
+		this._onMapDespawn += (object sender, EventArgs args) => newGrabbableControl.NetworkObjectBuf.Despawn();
+
         this.OnSpawn?.Invoke(this._parentInstance, new SpawnEventArgs(newGrabbableControl.Info));
-        print("spawned");
         return newGrabbableControl;
     }
 }

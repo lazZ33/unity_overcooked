@@ -1,6 +1,6 @@
-using Unity;
-using System;
+//using Unity;
+//using System;
 
-public class ClientHolderPhysics: ClientInteractablePhysics{
+//public class ClientHolderPhysics: ClientInteractablePhysics{
     
-}
+//}

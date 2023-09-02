@@ -10,6 +10,7 @@ public interface IServerInteractable
 
 	public NetworkObjectReference NetworkObjectReferenceBuf { get; }
 	public NetworkObject NetworkObjectBuf { get; }
+	public Transform transform { get; }
 
 
 	public event EventHandler<InfoChangeEventArgs> OnInfoChange;

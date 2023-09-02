@@ -17,8 +17,8 @@ internal class ServerGrabDropControl : ServerInteractControl
     private new IGrabbableSO _info { get { return (IGrabbableSO)base._info; } }
 
 
-    public event EventHandler<GrabDropEventArgs> OnGrab;
-    public event EventHandler<GrabDropEventArgs> OnDrop;
+    public event EventHandler<ServerGrabDropEventArgs> OnGrab;
+    public event EventHandler<ServerGrabDropEventArgs> OnDrop;
 
 
 	public bool IsGrabbedByPlayer => this.GrabbedClientId.Value != this.GRABBED_CLIENT_DEFAULT;
@@ -42,28 +42,31 @@ internal class ServerGrabDropControl : ServerInteractControl
         this.GRABBED_CLIENT_DEFAULT = args.GRABBED_CLIENT_DEFAULT;
 	}
 
+	protected override void Start()
+	{
+		base.Start();
+
+		if (this.GrabbedClientId == null || this.GRABBED_CLIENT_DEFAULT == 0)
+			throw new MissingReferenceException(String.Format("grabDrop control not properly initialized before Start(), parent instance: {0}", this._parentInstance));
+	}
+
 
 	internal void OnGrabServerInternal(IServerHolder targetHolder){
         if (this.IsGrabbedByPlayer) return;
-        print("OnGrabServerInternal");
 
-        this.gameObject.layer = this._grabbedGrabbableLayerMask;
-        this.GrabbedClientId.Value = targetHolder.OwnerClientId;
+		// set layer with LayerMask type: https://discussions.unity.com/t/layer-layermask-which-is-set-in-inspector/179105
+        this.gameObject.layer = (int) Mathf.Log(this._grabbedGrabbableLayerMask.value, 2);
+		this.GrabbedClientId.Value = targetHolder.OwnerClientId;
 
-        this.OnGrab?.Invoke(this, new GrabDropEventArgs(this._info, targetHolder));
-        // this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnGrab);
-        print("grabbed");
+        this.OnGrab?.Invoke(this._parentInstance, new ServerGrabDropEventArgs(this._info, targetHolder));
     }
 
     internal void OnDropServerInternal(){
-        print("OnDropServerInternal");
+		// set layer with LayerMask type: https://discussions.unity.com/t/layer-layermask-which-is-set-in-inspector/179105
+        this.gameObject.layer = (int)Mathf.Log(this._interactableLayerMask.value, 2);
+		this.GrabbedClientId.Value = this.GRABBED_CLIENT_DEFAULT;
 
-        this.gameObject.layer = this._interactableLayerMask;
-        this.GrabbedClientId.Value = this.GRABBED_CLIENT_DEFAULT;
-
-        this.OnDrop?.Invoke(this, new GrabDropEventArgs(this._info, null));
-        // this._client.InteractionCallbackClientRpc(InteractionCallbackID.OnDrop);
-        print("Dropped");
+        this.OnDrop?.Invoke(this._parentInstance, new ServerGrabDropEventArgs(this._info, null));
     }
 
 }

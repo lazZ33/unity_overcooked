@@ -15,10 +15,17 @@ MonoBehaviour:
   _mesh: {fileID: -7661124072915667876, guid: c696ac6d3a3e6f3498660d418d8fe5a0, type: 3}
   _meshCollider: {fileID: -494866541199811230, guid: 0600cd3d1155a0e4c8f29944aba6ff0c, type: 3}
   _material: {fileID: 2100000, guid: e197d97ccddea2b4b9e549733881f381, type: 2}
-  _placeableTo:
-  - {fileID: 11400000, guid: 278ddf87e4f2c5442a59f56ad5d9b527, type: 2}
-  _compatibleUtensils: []
+  _requiredCombinables: []
   _combinableTo: []
-  RequiredCombinables: []
-  RequiredUsableHolder: {fileID: 0}
+  _requiredConverter:
+    mode: 1
+    unityReference: {fileID: 0}
+    rawReference:
+      rid: -2
+  _displaySprite: {fileID: 0}
   _isFinalCombinable: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

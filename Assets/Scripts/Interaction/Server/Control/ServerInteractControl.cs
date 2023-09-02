@@ -47,11 +47,12 @@ public abstract class ServerInteractControl: NetworkBehaviour
 	protected virtual void Start()
 	{
         if (this._getInfo == null)
-            throw new MissingReferenceException("Info not initialized before Start()");
-        if (this._parentInstance == null)
+            throw new MissingReferenceException(String.Format("Info not initialized before Start(), parent instance: {0}", this._parentInstance));
+
+		if (this._parentInstance == null)
             throw new MissingReferenceException("ParentInstance not initialized before Start()");
         if (!this.IsDepsInitialized)
-            throw new MissingReferenceException("Dependencies not initialized before Start()");
+            throw new MissingReferenceException(String.Format("Dependencies not initialized before Start(), parent instance: {0}", this._parentInstance));
 	}
 
 	public override void OnNetworkSpawn(){

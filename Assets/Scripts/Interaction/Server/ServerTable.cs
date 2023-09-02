@@ -12,7 +12,7 @@ internal class ServerTable : ServerInteractable, IServerHolder
 	private IServerGrabbable _holdGrabbable = null;
 
 
-	IHolderSO IServerHolder.Info => (IHolderSO)base._info;
+	IHolderSO IServerHolder.Info => (IHolderSO)base._info.Value;
 	ulong IServerHolder.OwnerClientId => this.OwnerClientId;
 	IServerGrabbable IServerHolder.HoldGrabbable => this._holdGrabbable;
 	bool IServerHolder.IsHoldingGrabbable => this.holdTakeControl.IsHoldingGrabbable;

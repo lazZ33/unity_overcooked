@@ -17,9 +17,11 @@ GameObject:
   - component: {fileID: 1279322287002805041}
   - component: {fileID: 5625223617281895350}
   - component: {fileID: -1064810102568360346}
-  - component: {fileID: 7679387550487892843}
   - component: {fileID: 221861422409395842}
   - component: {fileID: 1518033664673548479}
+  - component: {fileID: 8356260302259184351}
+  - component: {fileID: 7679387550487892843}
+  - component: {fileID: 6680722657508455963}
   m_Layer: 9
   m_Name: UtilityPrefab
   m_TagString: Untagged
@@ -185,11 +187,74 @@ MonoBehaviour:
   m_GameObject: {fileID: 361355101908152114}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c52b47e027236a248841b4fd54b19bc1, type: 3}
+  m_Script: {fileID: 11500000, guid: fc3dd11fb036d8c43a7d76a7a0f38079, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _client: {fileID: 221861422409395842}
-  _info: {fileID: 0}
+  _info:
+    mode: 0
+    unityReference: {fileID: 0}
+    rawReference:
+      rid: -2
+  holdTakeControl: {fileID: 1518033664673548479}
+  convertControl: {fileID: 8356260302259184351}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+--- !u!114 &221861422409395842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361355101908152114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acf7ea2943694ac4895d2f3448072727, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  server:
+    mode: 0
+    unityReference: {fileID: -1064810102568360346}
+    rawReference:
+      rid: -2
+  info:
+    mode: 0
+    unityReference: {fileID: 0}
+    rawReference:
+      rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+--- !u!114 &1518033664673548479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361355101908152114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 737baa248d02a1546a8c53f878b5731a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8356260302259184351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361355101908152114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5e1dd178fde0624eb9ce6a486d3b796, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interactions: {fileID: 11400000, guid: 3b4eddbb8c84ca34eb6d9b078eb4235a, type: 2}
 --- !u!114 &7679387550487892843
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203,9 +268,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _meshCollider: {fileID: 1713383876882775711}
-  _interactableControl: {fileID: -1064810102568360346}
+  interactableControl:
+    mode: 0
+    unityReference: {fileID: -1064810102568360346}
+    rawReference:
+      rid: -2
   _rigidbody: {fileID: 1279322287002805041}
---- !u!114 &221861422409395842
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+--- !u!114 &6680722657508455963
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -214,22 +288,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 361355101908152114}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93abe640344711545a6064f22ef5cffb, type: 3}
+  m_Script: {fileID: 11500000, guid: b7cffe95a6c42e0439aeee78ac9352b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _server: {fileID: -1064810102568360346}
-  _info: {fileID: 0}
---- !u!114 &1518033664673548479
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 361355101908152114}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91bfe2a99ed3dd243a531ee2dd44159f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _meshCollider: {fileID: 1713383876882775711}
-  _interactableControl: {fileID: 221861422409395842}
+  interactableControl:
+    mode: 0
+    unityReference: {fileID: 221861422409395842}
+    rawReference:
+      rid: -2
+  _meshFilter: {fileID: 361355101908152118}
+  _renderer: {fileID: 361355101908152117}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

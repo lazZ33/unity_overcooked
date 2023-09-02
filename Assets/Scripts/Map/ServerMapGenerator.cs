@@ -5,6 +5,7 @@ using Unity.Collections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class ServerMapGenerator {
 
@@ -12,7 +13,7 @@ public class ServerMapGenerator {
     private int _mapX;
     private int _mapY;
 
-    public CellState[,] GenerateMapArray(int XSize, int YSize, int utilityAmount, int spawnAmount, int toolAmount, int interactableGroupAmount){
+    public CellState[,] GenerateMapArray(out Vector2Int[] playerSpawnPoints, int playerAmount, int XSize, int YSize, int utilityAmount, int spawnAmount, int toolAmount, int interactableGroupAmount){
         Debug.Log("Start generating map");
 
         // init map
@@ -31,7 +32,6 @@ public class ServerMapGenerator {
         int minTotalUtilGroupDist = (int) Math.Floor((double) Math.Sqrt(1.5*XSize*YSize / Math.Pow(interactableGroupAmount,2)) * Math.Pow(2, interactableGroupAmount));
         Debug.Log("minUtilGroupDist: " + minUtilGroupDist);
         Debug.Log("totalUtilGroupDist: " + minTotalUtilGroupDist);
-        int playerAmount = 4;
         int obstaclesChance = 9; // 1 - 10, 10 = always add obstacles between pivots
         int requestedObstacleMaxSize = UnityEngine.Random.Range(4, (this._mapX+this._mapY)/10);
         CellState defaultCellState = UnityEngine.Random.Range(0, 2) == 0 ? CellState.Walkable : CellState.Unwalkable;
@@ -124,6 +124,23 @@ public class ServerMapGenerator {
                 outputMapArray[x,y] = this._map[x,y].cellState;
             }
         }
+
+        // Generate player spawn points
+        List<Cell> validPlayerSpawnPoints = this.GetRandomCells(playerAmount, (cell) =>
+            {
+                if (cell.cellState != CellState.Walkable) return false;
+                foreach (Cell neighbour in this.Get8Neighbour(cell))
+                {
+                    if (neighbour.cellState != CellState.Walkable) return false;
+                }
+                return true;
+            }
+        );
+        playerSpawnPoints = validPlayerSpawnPoints.Select((cell) => { 
+            this._map[cell.x, cell.y].cellState = CellState.PlayerSpawn;
+            return new Vector2Int(cell.x,cell.y);
+        }).ToArray();
+
         return outputMapArray;
     }
 

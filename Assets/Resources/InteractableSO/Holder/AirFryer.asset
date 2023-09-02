@@ -15,8 +15,18 @@ MonoBehaviour:
   _mesh: {fileID: 1475585861225107177, guid: 0ac85a8a32feb7f43b8246c295d7a2f9, type: 3}
   _meshCollider: {fileID: -5495902117074765545, guid: 9e8526e5e398c1446a6a58f374edefa0, type: 3}
   _material: {fileID: -3809520769806320230, guid: 0ac85a8a32feb7f43b8246c295d7a2f9, type: 3}
-  LocalPlacePoint: {x: 0, y: 0.75, z: 0}
+  _localPlacePosition: {x: 0, y: 1, z: 0}
+  _localPlaceRotation: {x: 0, y: 0, z: 0, w: 1}
+  _bindingHolder:
+    mode: 0
+    unityReference: {fileID: 11400000, guid: 88e463ad9ed77654aafc1d1dddef8217, type: 2}
+    rawReference:
+      rid: -2
+  _isConverter: 1
   _isHoldToUse: 0
-  _useTime: 5
   _onUsingUpdateInterval: 0.5
-  _bindingUtensil: {fileID: 11400000, guid: 88e463ad9ed77654aafc1d1dddef8217, type: 2}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

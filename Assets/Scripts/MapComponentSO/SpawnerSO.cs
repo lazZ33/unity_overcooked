@@ -25,6 +25,6 @@ public class SpawnerSO: InteractableSO, ISpawnerSO, IHolderSO
 	public Quaternion SpawnningRotation => this._spawnningRotation;
 
 
-	public static new SpawnerSO GetSO(string strKey) => (SpawnerSO)InteractableSO.GetSO(strKey);
-    public static new SpawnerSO TryGetSO(string strKey) => (SpawnerSO)InteractableSO.TryGetSO(strKey);
+	public static new SpawnerSO GetSO(string strKey) => (SpawnerSO)IInteractableSO.GetSO(strKey);
+    public static new SpawnerSO TryGetSO(string strKey) => (SpawnerSO)IInteractableSO.TryGetSO(strKey);
 }

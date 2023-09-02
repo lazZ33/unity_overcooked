@@ -4,10 +4,12 @@ using UnityEngine;
 using Unity.Netcode;
 using System;
 
-public class ServerHolderPhysics: ServerInteractablePhysics{
+public class ServerHolderPhysics: ServerInteractablePhysics
+{
     [SerializeField] private Rigidbody _rigidbody = null;
 
-    public override void OnNetworkSpawn(){
+    public override void OnNetworkSpawn()
+    {
         if (!this.IsServer) return;
         this._rigidbody.constraints = RigidbodyConstraints.FreezeAll;
     }

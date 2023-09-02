@@ -18,8 +18,8 @@ internal class ServerSpawner : ServerInteractable, IServerHolder, IServerSpawner
 	public event EventHandler<HoldTakeEventArgs> OnHold;
 	public event EventHandler<HoldTakeEventArgs> OnTake;
 
-	ISpawnerSO IServerSpawner.Info => (ISpawnerSO) base._info;
-	IHolderSO IServerHolder.Info => (IHolderSO) base._info;
+	ISpawnerSO IServerSpawner.Info => (ISpawnerSO) base._info.Value;
+	IHolderSO IServerHolder.Info => (IHolderSO) base._info.Value;
 	ulong IServerHolder.OwnerClientId => base.OwnerClientId;
 	bool IServerHolder.IsHoldingGrabbable => this.holdTakeControl.IsHoldingGrabbable;
 	IServerGrabbable IServerHolder.HoldGrabbable => this._holdGrabbable;
@@ -58,8 +58,14 @@ internal class ServerSpawner : ServerInteractable, IServerHolder, IServerSpawner
 			this.spawnControl.OnSpawn += (sender, args) => { this.OnSpawn?.Invoke(sender, args); };
 			this.spawnControl.OnSpawn += (sender, args) =>
 				{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnSpawn, args.SpawnedGrabbableInfo.StrKey); };
-			this.holdTakeControl.DepsInit(spawnInitArgs);
+			this.spawnControl.DepsInit(spawnInitArgs);
 		}
+	}
+
+	public override void OnMapDespawn(object sender, EventArgs args)
+	{
+		base.OnMapDespawn(sender, args);
+		this.spawnControl.OnMapDespawn();
 	}
 
 	public void SpawnningGrabbableInfoInit(IGrabbableSO info)

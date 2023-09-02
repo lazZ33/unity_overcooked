@@ -15,12 +15,25 @@ MonoBehaviour:
   _mesh: {fileID: 4300000, guid: 2fb39e5bc2caa9e498483bc9735b82ba, type: 2}
   _meshCollider: {fileID: -4691906513582887508, guid: 7e37b7255a0a36a458d870f375e1b6e3, type: 3}
   _material: {fileID: 2100000, guid: e197d97ccddea2b4b9e549733881f381, type: 2}
-  _placeableTo: []
-  _compatibleUtensils: []
-  _combinableTo: []
   _requiredCombinables:
-  - {fileID: 11400000, guid: 2852e49e42e71aa4aa3443d53f8ac8fe, type: 2}
-  - {fileID: 11400000, guid: 62b7b78de4c42ec4ab752c9f03705303, type: 2}
-  _requiredUsableHolder: {fileID: 0}
-  _isFinalCombinable: 1
+  - mode: 0
+    unityReference: {fileID: 11400000, guid: 2852e49e42e71aa4aa3443d53f8ac8fe, type: 2}
+    rawReference:
+      rid: -2
+  - mode: 0
+    unityReference: {fileID: 11400000, guid: 62b7b78de4c42ec4ab752c9f03705303, type: 2}
+    rawReference:
+      rid: -2
+  _combinableTo: []
+  _requiredConverter:
+    mode: 1
+    unityReference: {fileID: 0}
+    rawReference:
+      rid: -2
   _displaySprite: {fileID: 21300000, guid: 4c5c658bf7aba1a41a8a49c266844bec, type: 3}
+  _isFinalCombinable: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

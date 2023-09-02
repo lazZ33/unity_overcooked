@@ -13,7 +13,7 @@ public class ClientMapManager: NetworkBehaviour
 
     private List<ICombinableSO> _targetDishesSO;
     private List<ICombinableSO> _requiredCombinableSOList;
-    private List<IUsableSO> _requiredConverterSOList;
+    private List<IConverterSO> _requiredConverterSOList;
 
 
     public override void OnNetworkSpawn(){

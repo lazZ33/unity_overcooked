@@ -8,10 +8,9 @@ using HoldTakeInitArgs = ServerHoldTakeControl.HoldTakeControlInitArgs;
 
 public class ServerPlayerInteractionControl : ServerInteractable, IServerHolder
 {
-	// Singletons
-	private ServerInteractionManager _interactions = ServerInteractionManager.Instance;
 
 	// Private serialized fields
+	[SerializeField] private ServerInteractionManager _interactions;
 	[SerializeField] private LayerMask _interactableLayerMask;
 	[SerializeField] private Collider _grabCollider;
 
@@ -25,7 +24,7 @@ public class ServerPlayerInteractionControl : ServerInteractable, IServerHolder
 
 
 	// interface fields implementations/linkages
-	IHolderSO IServerHolder.Info => (IHolderSO)base._info;
+	IHolderSO IServerHolder.Info => (IHolderSO)base._info.Value;
 	ulong IServerHolder.OwnerClientId => this.OwnerClientId;
 	IServerGrabbable IServerHolder.HoldGrabbable => this._holdGrabbable;
 	bool IServerHolder.IsHoldingGrabbable => this.holdTakeControl.IsHoldingGrabbable;
@@ -76,13 +75,23 @@ public class ServerPlayerInteractionControl : ServerInteractable, IServerHolder
 		switch (targetInteractable, this._holdGrabbable)
 		{
 			// both side have stuff
+			case (IServerHolder targetHolder, IServerHolder holdHolder):
+				// both are holders
+				switch (targetHolder.HoldGrabbable, holdHolder.HoldGrabbable)
+				{
+					case (IServerCombinable targetContainedCombinable, IServerCombinable holdContainedCombinable):
+						if (targetContainedCombinable.CanCombineWith(holdContainedCombinable))
+							this._interactions.CombineOnHolderServerInternal(targetHolder, holdHolder);
+						break;
+				}
+				break;
 			case (IServerHolder targetHolder, IServerGrabbable holdGrabbable):
-				// dealing with grabbable inside targetHolder
+				// target is holder
 				switch (targetHolder.HoldGrabbable, holdGrabbable)
 				{
 					case (IServerCombinable containedCombinable, IServerCombinable holdCombinable):
 						if (holdCombinable.CanCombineWith(containedCombinable))
-							this._interactions.CombineServerInternal(containedCombinable, holdCombinable);
+							this._interactions.CombineOnHolderServerInternal(targetHolder, this);
 						break;
 					case (null, IServerGrabbable):
 						this._interactions.TransferServerInternal(targetHolder, this);
@@ -91,12 +100,12 @@ public class ServerPlayerInteractionControl : ServerInteractable, IServerHolder
 				}
 				break;
 			case (IServerGrabbable targetGrabbable, IServerHolder holdHolder):
-				// dealing with grabbable inside holdHolder
+				// holding holder
 				switch (targetGrabbable, holdHolder.HoldGrabbable)
 				{
 					case (IServerCombinable targetCombinable, IServerCombinable containedCombinable):
 						if (targetCombinable.CanCombineWith(containedCombinable))
-							this._interactions.CombineServerInternal(containedCombinable, targetCombinable);
+							this._interactions.CombineOnHolderServerInternal(targetCombinable, holdHolder);
 						break;
 					case (IServerGrabbable, null):
 						this._interactions.GrabServerInternal(holdHolder, targetGrabbable);
@@ -104,12 +113,23 @@ public class ServerPlayerInteractionControl : ServerInteractable, IServerHolder
 					default: break;
 				}
 				break;
+			// both are combinables
 			case (IServerCombinable targetCombinable, IServerCombinable holdCombinable):
-				this._interactions.CombineServerInternal(targetCombinable, holdCombinable);
+				this._interactions.CombineOnHolderServerInternal(targetCombinable, this);
 				break;
 
 
 			// target side have stuff
+			case (IServerSpawner targetSpawner, null):
+				{
+					IServerHolder targetHolder = targetSpawner as IServerHolder;
+					if (targetHolder != null && targetHolder.IsHoldingGrabbable) { 
+					this._interactions.TransferServerInternal(this, targetHolder);
+					}
+					else
+						this._interactions.SpawnAndGrabServerInternal(targetSpawner, this);
+				}
+				break;
 			case (IServerHolder targetHolder, null):
 				this._interactions.TransferServerInternal(this, targetHolder);
 				break;

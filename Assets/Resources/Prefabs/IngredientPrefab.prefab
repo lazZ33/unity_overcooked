@@ -17,9 +17,10 @@ GameObject:
   - component: {fileID: 4809788865664877867}
   - component: {fileID: 648980324325779382}
   - component: {fileID: 5685021786767484083}
+  - component: {fileID: 3810667319652587242}
+  - component: {fileID: 2295556216076961765}
+  - component: {fileID: 4760685743697599820}
   - component: {fileID: -1962176917906438133}
-  - component: {fileID: -8497488865030191398}
-  - component: {fileID: -5347207366710187120}
   - component: {fileID: 2939854184297762135}
   m_Layer: 9
   m_Name: IngredientPrefab
@@ -186,11 +187,79 @@ MonoBehaviour:
   m_GameObject: {fileID: 7062854213495437386}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07cadd417216b724fb36500737bc1c06, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c5374c58cd042c46af5fb3ff90738f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _client: {fileID: -8497488865030191398}
-  _info: {fileID: 0}
+  _client: {fileID: 3810667319652587242}
+  _info:
+    mode: 1
+    unityReference: {fileID: 0}
+    rawReference:
+      rid: -2
+  grabDropControl: {fileID: 2295556216076961765}
+  combineControl: {fileID: 4760685743697599820}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+--- !u!114 &3810667319652587242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7062854213495437386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb6f87a2920a13f4a9fb358d3c540787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  server:
+    mode: 0
+    unityReference: {fileID: 5685021786767484083}
+    rawReference:
+      rid: -2
+  info:
+    mode: 0
+    unityReference: {fileID: 0}
+    rawReference:
+      rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+--- !u!114 &2295556216076961765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7062854213495437386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f28f889cabcdef741b738a8322a145f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _grabbedGrabbableLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
+  _interactableLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
+--- !u!114 &4760685743697599820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7062854213495437386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bcfc5c6a93bb444699ee69b957b1eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &-1962176917906438133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,37 +273,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _meshCollider: {fileID: 4902986773072523698}
-  _interactableControl: {fileID: 5685021786767484083}
+  interactableControl:
+    mode: 0
+    unityReference: {fileID: 5685021786767484083}
+    rawReference:
+      rid: -2
   _rigidBody: {fileID: 6067502908614995963}
-  _grabbableControl: {fileID: 5685021786767484083}
---- !u!114 &-8497488865030191398
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7062854213495437386}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb6f87a2920a13f4a9fb358d3c540787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _server: {fileID: 5685021786767484083}
-  _info: {fileID: 0}
---- !u!114 &-5347207366710187120
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7062854213495437386}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f76cbf20ff1eda84e9d9c480fa4ee98f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _meshCollider: {fileID: 4902986773072523698}
-  _interactableControl: {fileID: -8497488865030191398}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &2939854184297762135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,6 +296,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a395ba8a85f49447820d5953d3beec9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interactableControl: {fileID: -8497488865030191398}
+  interactableControl:
+    mode: 0
+    unityReference: {fileID: 3810667319652587242}
+    rawReference:
+      rid: -2
   _meshFilter: {fileID: 6836542597427326293}
   _renderer: {fileID: 8720288347193055647}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

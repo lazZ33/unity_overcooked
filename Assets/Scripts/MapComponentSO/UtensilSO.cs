@@ -21,6 +21,6 @@ public class UtensilSO : InteractableSO, IHolderSO, IGrabbableSO
 	HashSet<IHolderSO> IGrabbableSO._existingPlaceableTo { get; } = new HashSet<IHolderSO>();
 
 
-	public static new UtensilSO GetSO(string strKey) => (UtensilSO)InteractableSO.GetSO(strKey);
-	public static new UtensilSO TryGetSO(string strKey) => (UtensilSO)InteractableSO.TryGetSO(strKey);
+	public static new UtensilSO GetSO(string strKey) => (UtensilSO)IInteractableSO.GetSO(strKey);
+	public static new UtensilSO TryGetSO(string strKey) => (UtensilSO)IInteractableSO.TryGetSO(strKey);
 }

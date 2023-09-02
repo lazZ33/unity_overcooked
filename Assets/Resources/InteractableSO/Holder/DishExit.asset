@@ -9,10 +9,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aecaf6f5ccc09454797952c581d889c2, type: 3}
+  m_Script: {fileID: 11500000, guid: b23432b7fd92b4d4e8ecd0b936a1e24e, type: 3}
   m_Name: DishExit
   m_EditorClassIdentifier: 
-  _mesh: {fileID: 3082250236548730855, guid: d47242c9dad9fd94da628bcf6fb36c2e, type: 3}
-  _meshCollider: {fileID: -5495902117074765545, guid: 9e8526e5e398c1446a6a58f374edefa0, type: 3}
-  _material: {fileID: 2100000, guid: f7bbd21b1298745458209aed31d9c489, type: 2}
-  LocalPlacePoint: {x: 0, y: 1.1, z: 0}
+  _mesh: {fileID: -2432090755550338912, guid: 3793bd66fd9bd2f408506f4719835911, type: 3}
+  _meshCollider: {fileID: -2432090755550338912, guid: 1e05ee6da1b84834ba06d75d129bff76, type: 3}
+  _material: {fileID: 2100000, guid: 0fad5a8677daab840ab5a451856c6267, type: 2}
+  _localPlacePosition: {x: 0, y: 0, z: 0}
+  _localPlaceRotation: {x: 1, y: -0.00000004371139, z: -0.00000004371139, w: 1.9106855e-15}
+  _bindingHolder:
+    mode: 0
+    unityReference: {fileID: 0}
+    rawReference:
+      rid: -2
+  _isHoldToConvert: 0
+  _onConvertUpdateInterval: 0
+  _convertDuration: 0
+  _isConvertToVoid: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

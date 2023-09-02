@@ -16,5 +16,5 @@ public class TableSO : InteractableSO, IHolderSO
 	public IHolderSO BindingHolder => this._bindingHolder.Value;
 
 
-	public static new TableSO GetSO(string strKey) => (TableSO)InteractableSO.GetSO(strKey);
+	public static new TableSO GetSO(string strKey) => (TableSO)IInteractableSO.GetSO(strKey);
 }

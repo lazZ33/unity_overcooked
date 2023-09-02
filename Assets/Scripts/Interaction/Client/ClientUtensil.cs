@@ -5,19 +5,22 @@ using Unity.Collections;
 using UnityEngine;
 using Unity.Netcode;
 
-public class ClientUtensil: ClientInteractable, IGrabbableSO, IUsableSO
+public class ClientUtensil: ClientInteractable, IClientHolder, IClientGrabbable
 {
 	private new ServerUtensil _server => (ServerUtensil)base._server;
 	private new UtensilSO Info => (UtensilSO)base._info;
 	private new UtensilSO _info => (UtensilSO)base._info;
 
 
-	private HashSet<IHolderSO> _existingPlaceableTo = new HashSet<IHolderSO>();
-	HashSet<IHolderSO> IGrabbableSO._existingPlaceableTo => this._existingPlaceableTo;
+	IGrabbableSO IClientGrabbable.Info => this._info;
+	IHolderSO IClientHolder.Info => this._info;
 
 
-	public string StrKey => ((IUsableSO)base._info).StrKey;
-	public bool IsConverter => ((IUsableSO)base._info).IsConverter;
-	public bool IsHoldToUse => ((IUsableSO)base._info).IsHoldToUse;
-	public double OnUsingUpdateInterval => ((IUsableSO)base._info).OnUsingUpdateInterval;
+	public bool CanPlaceOn(IServerHolder targetHolder) => ((IGrabbableSO)this.Info).CanPlaceOn(targetHolder.Info);
+
+
+	public event EventHandler<ClientGrabDropEventArgs> OnGrab;
+	public event EventHandler<ClientGrabDropEventArgs> OnDrop;
+	public event EventHandler<HoldTakeEventArgs> OnHold;
+	public event EventHandler<HoldTakeEventArgs> OnTake;
 }

@@ -27,9 +27,20 @@ public static class HelperFunc{
     public static void LogEnumerable(IEnumerable<object> enumerable){
         string msg = "";
         foreach(object element in enumerable){
-            msg += element.ToString() + " ,";
+            msg += ((element?.ToString())??"<null item>") + ", ";
         }
+        if (msg == "") msg = "<nothing in it>";
         Debug.Log(msg);
     }
+    public static void LogEnumerable(string collectionName, IEnumerable<object> enumerable)
+    {
+		string msg = "";
+		foreach (object element in enumerable)
+		{
+			msg += ((element?.ToString()) ?? "<null item>") + ", ";
+		}
+		if (msg == "") msg = "nothing in it";
+		Debug.Log(string.Format("{0}: {1}", collectionName, msg));
+	}
 
 }

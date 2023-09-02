@@ -7,8 +7,8 @@ public interface IServerGrabbable: IServerInteractable
 {
 	public new IGrabbableSO Info { get; }
 
-	public event EventHandler<GrabDropEventArgs> OnGrab;
-	public event EventHandler<GrabDropEventArgs> OnDrop;
+	public event EventHandler<ServerGrabDropEventArgs> OnGrab;
+	public event EventHandler<ServerGrabDropEventArgs> OnDrop;
 
 	public bool IsGrabbedByPlayer { get; }
 	public bool IsGrabbedByLocal { get; }

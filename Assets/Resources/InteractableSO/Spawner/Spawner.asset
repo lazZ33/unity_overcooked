@@ -10,10 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62664717bf12f6a44a75f77b825c6c75, type: 3}
-  m_Name: Spawn
+  m_Name: Spawner
   m_EditorClassIdentifier: 
   _mesh: {fileID: 4300000, guid: 2fb39e5bc2caa9e498483bc9735b82ba, type: 2}
   _meshCollider: {fileID: -5495902117074765545, guid: 9e8526e5e398c1446a6a58f374edefa0, type: 3}
   _material: {fileID: 2100000, guid: e197d97ccddea2b4b9e549733881f381, type: 2}
+  _localPlacePosition: {x: 0, y: 1, z: 0}
+  _localPlaceRotation: {x: 0, y: 0, z: 0, w: 0}
+  _bindingHolder:
+    mode: 0
+    unityReference: {fileID: 0}
+    rawReference:
+      rid: -2
   _spawnDisplay: {fileID: 0}
-  _localSpawnPoint: {x: 0, y: 1, z: 0}
+  _spawnningPosition: {x: 0, y: 0, z: 0}
+  _spawnningRotation: {x: 0, y: 0, z: 0, w: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

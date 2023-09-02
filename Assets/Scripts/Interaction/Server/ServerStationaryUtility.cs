@@ -3,37 +3,36 @@ using UnityEngine;
 using System;
 
 using HoldTakeInitArgs = ServerHoldTakeControl.HoldTakeControlInitArgs;
-using UseInitArgs = ServerUseControl.UseControlInitArgs;
-using System.Diagnostics;
+using UseInitArgs = ServerConvertControl.UseControlInitArgs;
 
-internal class ServerStationaryUtility : ServerInteractable, IServerUsable, IServerHolder
+internal class ServerStationaryUtility : ServerInteractable, IServerConverter, IServerHolder
 {
 	[SerializeField] private ServerHoldTakeControl holdTakeControl;
-	[SerializeField] private ServerUseControl useControl;
+	[SerializeField] private ServerConvertControl convertControl;
 
 	// DI variables
 	private IServerGrabbable _holdGrabbable = null;
 
 
-	IUsableSO IServerUsable.Info => (IUsableSO)base._info;
-	IHolderSO IServerHolder.Info => (IHolderSO)base._info;
-	bool IServerUsable.IsHoldToUse => ((IServerUsable)this.Info).IsHoldToUse;
+	IConverterSO IServerConverter.Info => (IConverterSO)base._info.Value;
+	IHolderSO IServerHolder.Info => (IHolderSO)base._info.Value;
+	bool IServerConverter.IsHoldToConvert => ((IConverterSO)this.Info).IsHoldToConvert;
 	bool IServerHolder.IsHoldingGrabbable => this.holdTakeControl.IsHoldingGrabbable;
 	IServerGrabbable IServerHolder.HoldGrabbable { get { return this._holdGrabbable; } }
 
 
 	public event EventHandler<HoldTakeEventArgs> OnHold;
 	public event EventHandler<HoldTakeEventArgs> OnTake;
-	public event EventHandler<ServerUseEventArgs> OnUse;
-	public event EventHandler<ServerUseEventArgs> OnUsing;
-	public event EventHandler<ServerUseEventArgs> OnUnuse;
+	public event EventHandler<ServerUseEventArgs> OnConvertStart;
+	public event EventHandler<ServerUseEventArgs> OnConverting;
+	public event EventHandler<ServerUseEventArgs> OnConvertEnd;
 	public event EventHandler<ServerUseEventArgs> OnConvert;
 
 	protected override void Awake()
 	{
 		base.Awake();
 
-		if (this.holdTakeControl == null || this.useControl == null)
+		if (this.holdTakeControl == null || this.convertControl == null)
 		{
 			throw new NullReferenceException("null controller detected");
 		}
@@ -54,39 +53,44 @@ internal class ServerStationaryUtility : ServerInteractable, IServerUsable, ISer
 			holdTakeControl.DepsInit(holdTakeInitArgs);
 		}
 
-		// use control DI
+		// convert control DI
 		{
 			UseInitArgs useInitArgs = new UseInitArgs();
 			useInitArgs.AddParentInstance(this);
 			useInitArgs.AddGetInfoFunc(() => this.Info);
-			useInitArgs.AddGetTargetFunc(GetUseTarget);
-			this.useControl.OnUse += (sender, args) => { this.OnUse?.Invoke(sender, args); };
-			this.useControl.OnUse += (sender, args) =>
+			useInitArgs.AddGetTargetFunc(GetConvertTarget);
+			this.convertControl.OnConvertStart += (sender, args) => { this.OnConvertStart?.Invoke(sender, args); };
+			this.convertControl.OnConvertStart += (sender, args) =>
 				{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnUse, args.target.Info.StrKey); };
-			this.useControl.OnUsing += (sender, args) => { this.OnUsing?.Invoke(sender, args); };
-			this.useControl.OnUsing += (sender, args) =>
+			this.convertControl.OnConverting += (sender, args) => { this.OnConverting?.Invoke(sender, args); };
+			this.convertControl.OnConverting += (sender, args) =>
 				{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnUse, args.target.Info.StrKey); };
-			this.useControl.OnUnuse += (sender, args) => { this.OnUnuse?.Invoke(sender, args); };
-			this.useControl.OnUnuse += (sender, args) =>
+			this.convertControl.OnConvertEnd += (sender, args) => { this.OnConvertEnd?.Invoke(sender, args); };
+			this.convertControl.OnConvertEnd += (sender, args) =>
 				{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnUse, args.target.Info.StrKey); };
-			this.useControl.OnConvert += (sender, args) => { this.OnConvert?.Invoke(sender, args); };
-			this.useControl.OnConvert += (sender, args) =>
+			this.convertControl.OnConvert += (sender, args) => { this.OnConvert?.Invoke(sender, args); };
+			this.convertControl.OnConvert += (sender, args) =>
 				{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnUse, args.target.Info.StrKey); };
-			useControl.DepsInit(useInitArgs);
+			convertControl.DepsInit(useInitArgs);
 		}
 	}
 
-	private IServerInteractable GetUseTarget()
+	private IServerCombinable GetConvertTarget()
 	{
-		switch (this._holdGrabbable.GetType())
+		if (this._holdGrabbable == null) return null;
+		switch (this._holdGrabbable)
 		{
 			case IServerHolder targetHolder:
-				if (!(targetHolder.Info == ((IHolderSO)this._info).BindingHolder)) return targetHolder;
+				if (targetHolder.Info != ((IHolderSO)this._info).BindingHolder && (((IHolderSO)this._info).BindingHolder != null))
+				{
+					Debug.LogError("converter holding an unexpected holder (non-binding Holder)");
+					return null;
+				}
 				if (!targetHolder.IsHoldingGrabbable) return null;
-				else return targetHolder.HoldGrabbable;
+				else return (IServerCombinable)targetHolder.HoldGrabbable;
 
-			case IServerGrabbable holdGrabbable:
-				return holdGrabbable;
+			case IServerCombinable holdCombinable:
+				return holdCombinable;
 			default:
 				return null;
 		}
@@ -95,6 +99,6 @@ internal class ServerStationaryUtility : ServerInteractable, IServerUsable, ISer
 
 	void IServerHolder.OnHoldServerInternal(IServerGrabbable targetGrabbable) => this.holdTakeControl.OnHoldServerInternal(targetGrabbable);
 	void IServerHolder.OnTakeServerInternal(out IServerGrabbable takenGrabbable) => this.holdTakeControl.OnTakeServerInternal(out takenGrabbable);
-	void IServerUsable.OnUseServerInternal() => this.useControl.OnUseServerInternal();
-	void IServerUsable.OnUnuseServerInternal() => this.useControl.OnUnuseServerInternal();
+	void IServerConverter.OnConvertStartServerInternal() => this.convertControl.OnConvertStartServerInternal();
+	void IServerConverter.OnConvertEndServerInternal() => this.convertControl.OnConvertEndServerInternal();
 }

@@ -41,14 +41,13 @@ internal class ServerHoldTakeControl : ServerInteractControl
 	{
 		base.Start();
 
-		if (this._getHoldGrabbable != null || this._setHoldGrabbable != null)
-			throw new MissingReferenceException("Grabbable not initialized before Start()");
+		if (this._getHoldGrabbable == null || this._setHoldGrabbable == null)
+			throw new MissingReferenceException(String.Format("holdTake control not properly initialized before Start(), parent instance: {0}", this._parentInstance));
 	}
 
 	internal void OnHoldServerInternal(IServerGrabbable targetGrabbable)
 	{
 		if (this.IsHoldingGrabbable) return;
-		print("OnPlaceServerInternal");
 
 		this._holdGrabbable = targetGrabbable;
 	}
@@ -56,7 +55,6 @@ internal class ServerHoldTakeControl : ServerInteractControl
 	internal void OnTakeServerInternal(out IServerGrabbable takenGrabbable)
 	{
 		if (!this.IsHoldingGrabbable) { Debug.LogError("OnTakeServerInternal called while not holding any grabbable"); takenGrabbable = null; return; }
-		print("OnTakeServerInternal");
 
 		takenGrabbable = this._holdGrabbable;
 		this._holdGrabbable = null;

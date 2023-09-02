@@ -2,21 +2,11 @@ using Unity;
 using UnityEngine;
 using System;
 using UnityEngine.WSA;
+using System.Linq;
 
-public class ServerInteractionManager
+[CreateAssetMenu(fileName="ServerInteractionManager", menuName="ScriptableObject/ServerInteractionManager")]
+public class ServerInteractionManager: ScriptableObject
 {
-	// Singleton
-	private static ServerInteractionManager _instance;
-	public static ServerInteractionManager Instance
-	{
-		get
-		{
-			if (_instance == null)
-				_instance = new ServerInteractionManager();
-			return _instance;
-		}
-	}
-
 	public void GrabServerInternal(IServerHolder targetHolder, IServerGrabbable targetGrabbable)
 	{
 		if (targetHolder.IsHoldingGrabbable) { Debug.LogError("Attempt to grab when holding grabbable."); return; }
@@ -34,37 +24,111 @@ public class ServerInteractionManager
 		droppedGrabbable.OnDropServerInternal();
 	}
 
-	public void TransferServerInternal(IServerHolder toHolder, IServerHolder fromHolder)
+	public void SpawnAndGrabServerInternal(IServerSpawner targetSpawner, IServerHolder targetHolder)
 	{
-		if (!fromHolder.IsHoldingGrabbable) { Debug.LogError("Attempt to place when not holding grabbable."); return; }
+		if (targetHolder.IsHoldingGrabbable) { Debug.LogError("Attempt to spawn and grab when holding grabbable."); return; }
 
-		fromHolder.OnTakeServerInternal(out IServerGrabbable placedGrabbable);
-		placedGrabbable.OnDropServerInternal();
-		placedGrabbable.OnGrabServerInternal(toHolder);
-		toHolder.OnHoldServerInternal(placedGrabbable);
+		IServerGrabbable newGrabbable = targetSpawner.OnSpawnServerInternal();
+		targetHolder.OnHoldServerInternal(newGrabbable);
+		newGrabbable.OnGrabServerInternal(targetHolder);
 	}
 
-	public void CombineServerInternal(IServerCombinable retainedCombinable, IServerCombinable removedCombinable)
+	public void TransferServerInternal(IServerHolder targetHolder, IServerHolder sourceHolder)
 	{
-		if (!retainedCombinable.CanCombineWith(removedCombinable) && !removedCombinable.CanCombineWith(retainedCombinable)) { 
+		if (!sourceHolder.IsHoldingGrabbable) { Debug.Log("sourceHolder not holding grabbable."); return; }
+
+		sourceHolder.OnTakeServerInternal(out IServerGrabbable placedGrabbable);
+		placedGrabbable.OnDropServerInternal();
+		placedGrabbable.OnGrabServerInternal(targetHolder);
+		targetHolder.OnHoldServerInternal(placedGrabbable);
+
+
+
+		IServerConverter targetConverter = targetHolder as IServerConverter;
+		IServerConverter sourceConverter = sourceHolder as IServerConverter;
+		if (targetConverter != null){
+			if (!targetConverter.IsHoldToConvert)
+				targetConverter.OnConvertStartServerInternal();
+		}
+		if (sourceConverter != null)
+		{
+			if (!sourceConverter.IsHoldToConvert)
+				sourceConverter.OnConvertEndServerInternal();
+		}
+	}
+
+	//public void CombineServerInternal(IServerCombinable retainedCombinable, IServerCombinable removedCombinable)
+	//{
+	//	if (!retainedCombinable.CanCombineWith(removedCombinable) && !removedCombinable.CanCombineWith(retainedCombinable)) { 
+	//		Debug.LogError("Attempt to combine invalid combination.");
+	//		return;
+	//	}
+	//	if (!retainedCombinable.CanCombineWith(removedCombinable) ^ !removedCombinable.CanCombineWith(retainedCombinable)) {
+	//		Debug.LogError(String.Format("Found one-way combination of combinables, please fix. 1: {0}, 2: {1}", retainedCombinable, removedCombinable));
+	//		return;
+	//	}
+
+	//	//removedCombinable.OnCombineServerInternal(); // is this needed?
+	//	retainedCombinable.SetInfoServerInternal(ICombinableSO.GetNextSO(retainedCombinable.Info, removedCombinable.Info));
+	//	removedCombinable.NetworkObjectBuf.Despawn();
+	//	retainedCombinable.OnCombineServerInternal(); // invoke callbacks
+	//}
+
+	public void CombineOnHolderServerInternal(IServerCombinable targetCombinable, IServerHolder targetHolder)
+	{
+		IServerCombinable removedCombinable = targetHolder.HoldGrabbable as IServerCombinable;
+		IServerCombinable retainedCombinable = targetCombinable;
+		if (removedCombinable == null) {
+			Debug.LogError("Attempt to combineOnHolder when targetHolder not holding a combinable.");
+			return;
+		}
+
+		if (!retainedCombinable.CanCombineWith(removedCombinable) && !removedCombinable.CanCombineWith(retainedCombinable))
+		{
 			Debug.LogError("Attempt to combine invalid combination.");
 			return;
 		}
-		if (!retainedCombinable.CanCombineWith(removedCombinable) ^ !removedCombinable.CanCombineWith(retainedCombinable)) {
+		if (!retainedCombinable.CanCombineWith(removedCombinable) ^ !removedCombinable.CanCombineWith(retainedCombinable))
+		{
 			Debug.LogError(String.Format("Found one-way combination of combinables, please fix. 1: {0}, 2: {1}", retainedCombinable, removedCombinable));
 			return;
 		}
 
+		targetHolder.OnTakeServerInternal(out IServerGrabbable removedGrabbable);
+		//removedCombinable.OnCombineServerInternal(); // is this needed?
+		retainedCombinable.SetInfoServerInternal(ICombinableSO.GetNextSO(retainedCombinable.Info, removedCombinable.Info));
+		removedCombinable.NetworkObjectBuf.Despawn();
+		retainedCombinable.OnCombineServerInternal(); // invoke callbacks
+	}
+	public void CombineOnHolderServerInternal(IServerHolder retainedTargetHolder, IServerHolder removedTargetHolder)
+	{
+		IServerCombinable retainedCombinable = retainedTargetHolder.HoldGrabbable as IServerCombinable;
+		IServerCombinable removedCombinable = removedTargetHolder.HoldGrabbable as IServerCombinable;
+		if ( retainedCombinable == null || removedCombinable == null) {
+			Debug.LogError("Attempt to combineOnHolder when one of the targetHolder not holding a combinable.");
+			return;
+		}
+
+		if (!retainedCombinable.CanCombineWith(removedCombinable) && !removedCombinable.CanCombineWith(retainedCombinable))
+		{
+			Debug.LogError("Attempt to combine invalid combination.");
+			return;
+		}
+		if (!retainedCombinable.CanCombineWith(removedCombinable) ^ !removedCombinable.CanCombineWith(retainedCombinable))
+		{
+			Debug.LogError(String.Format("Found one-way combination of combinables, please fix. 1: {0}, 2: {1}", retainedCombinable, removedCombinable));
+			return;
+		}
+
+		removedTargetHolder.OnTakeServerInternal(out IServerGrabbable removedGrabbable);
 		//removedCombinable.OnCombineServerInternal(); // is this needed?
 		retainedCombinable.SetInfoServerInternal(ICombinableSO.GetNextSO(retainedCombinable.Info, removedCombinable.Info));
 		removedCombinable.NetworkObjectBuf.Despawn();
 		retainedCombinable.OnCombineServerInternal(); // invoke callbacks
 	}
 
-	public void ConvertServerInternal(IServerCombinable targetCombinable, IServerUsable converter)
+	public void ConvertServerInternal(IServerCombinable targetCombinable, IServerConverter converter)
 	{
-		if (!converter.Info.IsConverter) { Debug.LogError("Attempt to use ConvertServerInternal with a non-converter IUsable."); return;}
-
 		ICombinableSO newCombinableSO = ICombinableSO.TryGetNextSO(targetCombinable.Info, converter.Info);
 
 		if (newCombinableSO == null) {
@@ -74,14 +138,25 @@ public class ServerInteractionManager
 
 		targetCombinable.SetInfoServerInternal(newCombinableSO);
 	}
-
-	public void UseServerInternal(IServerUsable targetUsable)
+	
+	public void ConvertToVoidServerInternal(IServerCombinable targetCombinable, IServerConverter converter)
 	{
-		targetUsable.OnUseServerInternal();
+		IServerHolder holder = converter as IServerHolder;
+		if (holder != null) {
+			holder.OnTakeServerInternal(out IServerGrabbable targetGrabbable);
+		}
+		
+		targetCombinable.NetworkObjectBuf.Despawn();
 	}
 
-	public void UnuseServerInternal(IServerUsable targetUsable)
+
+	public void UseServerInternal(IServerConverter targetUsable)
 	{
-		targetUsable.OnUnuseServerInternal();
+		targetUsable.OnConvertStartServerInternal();
+	}
+
+	public void UnuseServerInternal(IServerConverter targetUsable)
+	{
+		targetUsable.OnConvertEndServerInternal();
 	}
 }

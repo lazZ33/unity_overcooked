@@ -3,12 +3,15 @@ using UnityEngine;
 using Unity.Netcode;
 using Unity.Collections;
 using System;
+using TNRD;
 
 public abstract class ServerInteractablePhysics: NetworkBehaviour{
     [SerializeField] protected MeshCollider _meshCollider;
-    [SerializeField] protected ServerInteractable _interactableControl;
+    [SerializeField] private SerializableInterface<IServerInteractable> interactableControl;
+    protected IServerInteractable _interactableControl => this.interactableControl.Value;
 
-    protected virtual void Awake(){
+
+	protected virtual void Awake(){
         this._interactableControl.OnInfoChange += this.OnInfoChange;
     }
 

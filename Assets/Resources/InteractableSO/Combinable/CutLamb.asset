@@ -15,12 +15,21 @@ MonoBehaviour:
   _mesh: {fileID: -3644975171383713234, guid: 3d67b34b3f03a1a46917d0afe3b6eef0, type: 3}
   _meshCollider: {fileID: -1344334000072661919, guid: 85d57f09f9e06594c9ea0e80a4ef8977, type: 3}
   _material: {fileID: 2100000, guid: e197d97ccddea2b4b9e549733881f381, type: 2}
-  _placeableTo: []
-  _compatibleUtensils:
-  - {fileID: 11400000, guid: 88e463ad9ed77654aafc1d1dddef8217, type: 2}
-  _combinableTo: []
   _requiredCombinables:
-  - {fileID: 11400000, guid: 36f9c73f2c9d9fc4aa57a10f66ef510c, type: 2}
-  _requiredUsableHolder: {fileID: 11400000, guid: 278ddf87e4f2c5442a59f56ad5d9b527, type: 2}
-  _isFinalCombinable: 0
+  - mode: 0
+    unityReference: {fileID: 11400000, guid: 36f9c73f2c9d9fc4aa57a10f66ef510c, type: 2}
+    rawReference:
+      rid: -2
+  _combinableTo: []
+  _requiredConverter:
+    mode: 0
+    unityReference: {fileID: 11400000, guid: 278ddf87e4f2c5442a59f56ad5d9b527, type: 2}
+    rawReference:
+      rid: -2
   _displaySprite: {fileID: 0}
+  _isFinalCombinable: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

@@ -4,13 +4,15 @@ using System;
 using Unity.Collections;
 using UnityEngine;
 using Unity.Netcode;
-
+using TNRD;
 
 public class ClientInteractable: NetworkBehaviour, IClientInteractable
 {
-    [SerializeField] protected IServerInteractable _server;
-    [SerializeField] protected IInteractableSO _info;
-    public IInteractableSO Info => this._info;
+    [SerializeField] private SerializableInterface<IServerInteractable> server;
+    protected IServerInteractable _server => this.server.Value;
+    [SerializeField] private SerializableInterface<IInteractableSO> info;
+    protected IInteractableSO _info { get { return this.info.Value; } set { this.info.Value = value; } }
+    public IInteractableSO Info => this.info.Value;
 
 
     public NetworkObjectReference NetworkObjectReferenceBuf { get; private set; }
@@ -39,13 +41,13 @@ public class ClientInteractable: NetworkBehaviour, IClientInteractable
     [ClientRpc]
     internal void InteractionEventCallbackClientRpc(InteractionCallbackID id, FixedString128Bytes SOstrKey)
     {
-        InteractableSO info = InteractableSO.GetSO(SOstrKey.ToString());
+		IInteractableSO info = IInteractableSO.GetSO(SOstrKey.ToString());
 		switch (id)
 		{
 			case InteractionCallbackID.OnGrab:
-                this.OnInfoChange?.Invoke(this, new InfoChangeEventArgs((IInteractableSO)info)); break;
+                this.OnInfoChange?.Invoke(this, new InfoChangeEventArgs(info)); break;
 			default:
-				this._onInteractionCallbackExtensionHook?.Invoke(this, new InteractionEventExtensionEventArgs(id, (IInteractableSO)info));
+				this._onInteractionCallbackExtensionHook?.Invoke(this, new InteractionEventExtensionEventArgs(id, info));
 				break;
 		}
 	}

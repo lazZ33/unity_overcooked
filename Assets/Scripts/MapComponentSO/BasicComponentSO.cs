@@ -13,7 +13,9 @@ public class BasicComponentSO : ScriptableObject {
     [SerializeField] private TableSO _tableSO;
     public TableSO TableSO => this._tableSO;
     [SerializeField] private SpawnerSO _spawnableSO;
-    public SpawnerSO SpawnableSO => this._spawnableSO;
-    [SerializeField] private StationeryUtilitySO _dishExitSO;
-    public StationeryUtilitySO DishExitSO => this._dishExitSO;
+    public SpawnerSO SpawnerSO => this._spawnableSO;
+    [SerializeField] private StationaryUtilitySO _dishExitSO;
+    public StationaryUtilitySO DishExitSO => this._dishExitSO;
+    [SerializeField] private GameFloorSO _gameFloorSO;
+    public GameFloorSO GameFloorSO => this._gameFloorSO;
 }

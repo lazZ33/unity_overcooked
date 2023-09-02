@@ -32,7 +32,7 @@ public class ServerInteractable : NetworkBehaviour, IServerInteractable
 		if (!IsServer) this.enabled = false;
 
 		if (this.NetworkObjectBuf == null) this.NetworkObjectBuf = this.NetworkObject;
-		if (this._info != null)
+		if (this._info.Value != null)
 		{
 			this._infoStrKey.Value = this._info.Value.StrKey;
 			this.OnInfoChange?.Invoke(this, new InfoChangeEventArgs(this._info.Value));
@@ -41,7 +41,7 @@ public class ServerInteractable : NetworkBehaviour, IServerInteractable
 		this.NetworkObjectReferenceBuf = new NetworkObjectReference(this.NetworkObjectBuf);
 	}
 
-	public void OnMapDespawn(object sender, EventArgs args)
+	public virtual void OnMapDespawn(object sender, EventArgs args)
 	{
 		this.NetworkObjectBuf.Despawn();
 	}
@@ -59,7 +59,6 @@ public class ServerInteractable : NetworkBehaviour, IServerInteractable
 
 	void IServerInteractable.SetInfoServerInternal(IInteractableSO newInfo)
 	{
-		print("SetInfoServerInternal");
 		this._info.Value = newInfo;
 		this._infoStrKey.Value = newInfo.StrKey;
 

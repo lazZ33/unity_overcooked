@@ -4,15 +4,17 @@ using System;
 using Unity;
 using UnityEngine;
 using Unity.Netcode;
-using Unity.Collections;
-using System.Runtime.CompilerServices;
-using Codice.Client.Common.GameUI;
+using TNRD;
+using System.Linq;
 
 public class ServerGameManager: NetworkBehaviour{
 
     [SerializeField] private ClientGameManager _client;
-    [SerializeField] private ICombinableSO[] _targetDishes;
-    [SerializeField] private ServerMapManager _mapManger;
+    [SerializeField] private NetworkManager _networkManager;
+    [SerializeField] private ServerMapManager _mapManager;
+	[SerializeField] private GameObject _playerPrefab;
+    [SerializeField] private SerializableInterface<ICombinableSO>[] _targetDishes;
+    [SerializeField] private int _playerAmount = 4;
     [SerializeField] private double _gameDurationInit;
     [SerializeField] private double _newOrderTimeInterval;
     [SerializeField] private double _orderWarningTime = 20;
@@ -25,38 +27,50 @@ public class ServerGameManager: NetworkBehaviour{
     public event EventHandler<OrderListChangeEventArgs> OnOrderOverdue;
     public event EventHandler<ScoreChangeEventArgs> OnScoreChange;
 
+
     public static double CurGameTime => ServerGameManager._networkTimeSystem.ServerTime;
     public static double TimeLeft => ServerGameManager._gameDuration.Value - (ServerGameManager.CurGameTime - ServerGameManager._gameStartTime.Value);
     public static bool IsGameStarted => ServerGameManager._gameStartTime.Value != 0;
 
-    private static NetworkVariable<double> _gameStartTime;
-    private static NetworkVariable<double> _gameDuration;
+
+	private Vector3[] _initialSpawnPoints;
+	private int _initialSpawnPointsIdx = 0;
+
     private static NetworkTimeSystem _networkTimeSystem = NetworkTimeSystem.ServerTimeSystem();
+	private static NetworkVariable<double> _gameStartTime = new NetworkVariable<double>(0);
+	private static NetworkVariable<double> _gameDuration;
     private double _lastNewOrderTime;
+
     private int _gameScore;
     private List<Order> _existingOrders;
     private IScoreCalculator _scoreCalculator = new EasyScoreCalculator();
 
     void Awake(){
-        ServerGameManager._gameStartTime = new NetworkVariable<double>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-        ServerGameManager._gameDuration = new NetworkVariable<double>(this._gameDurationInit, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+		ServerGameManager._gameDuration = new NetworkVariable<double>(this._gameDurationInit);
+
+		// client connect callback called before serverStarted
+        // solution(?): add IsServer check in callback functions
+		// https://forum.unity.com/threads/order-of-callbacks-when-starting-a-host.1349018/
+		this._networkManager.OnServerStarted += this.SpawnMap;
+        this._networkManager.OnServerStarted += this.SpawnPlayerIfHost;
+        this._networkManager.OnClientConnectedCallback += this.SpawnPlayer;
+
+        // this._networkManager.OnCleintConnectedCallback = (TODO: UI callback to client for starting lobby UI)
     }
 
-    public void OnGameStart(){
+	public void GameStart()
+    {
         if (!this.IsServer) return;
         print("Game Start");
 
+        // TODO: UI events to client for starting in-game UI
+
         ServerGameManager._gameStartTime.Value = ServerGameManager.CurGameTime;
 
-        this._mapManger.OnDishOut += this.OnDishOut;
-
-        this._mapManger.GenerateMap(this._targetDishes);
-        this._mapManger.SpawnMap();
+        this._mapManager.OnDishOut += this.OnDishOut;
 
         this._lastNewOrderTime = ServerGameManager.CurGameTime;
         this._existingOrders = new List<Order>(this._maxOrderCount);
-
-
 
         for (int i = 0; i < this._maxOrderCount; i++){
             this.AddNewRandomOrder(out Order newOrder);
@@ -66,12 +80,60 @@ public class ServerGameManager: NetworkBehaviour{
         this._client.GameStateChangeCallbackClientRpc(null, 0, this._gameScore, GameStateChangeCallbackID.OnScoreChange);
     }
 
-    private void AddNewRandomOrder(out Order newOrder){
+    private void GamePause()
+    {
+        if (!this.IsServer) return;
+
+        // TODO: game pause UI, pause timer
+    }
+
+    private void GameEnd()
+    {
+        if (!this.IsServer) return;
+
+        // TODO: ending animations, pass control to the next scene
+    }
+
+    private void SpawnMap(){
+		if (!this.IsServer) return;
+
+        ICombinableSO[] targetDishes = new ICombinableSO[this._targetDishes.Length];
+        for(int i = 0; i < this._targetDishes.Length; i++) {
+            targetDishes[i] = this._targetDishes[i].Value;
+        }
+
+		Vector2Int[] spawnCells = _mapManager.GenerateMapArray(targetDishes, this._playerAmount);
+		this._initialSpawnPoints = new Vector3[spawnCells.Length];
+		for (int i = 0; i < spawnCells.Length; i++){
+			this._initialSpawnPoints[i] = this._mapManager.GetWorldCoor(spawnCells[i]);
+        }
+		this._mapManager.SpawnMap();
+	}
+
+    private void SpawnPlayerIfHost()
+    {
+        if (this.IsHost) this.SpawnPlayer(this.OwnerClientId);
+    }
+
+	private void SpawnPlayer(ulong clientId)
+	{
+        if (!this.IsServer) return;
+
+		Vector2 spawnPoint = this._initialSpawnPoints[this._initialSpawnPointsIdx];
+		this._initialSpawnPointsIdx = this._initialSpawnPointsIdx++ % this._initialSpawnPoints.Length;
+
+		GameObject newPlayerInstance = Instantiate(this._playerPrefab, spawnPoint, Quaternion.identity);
+		newPlayerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+        Debug.Log(String.Format("New player spawned with client Id {0}", clientId));
+	}
+
+    private void AddNewRandomOrder(out Order newOrder)
+    {
         if (!this.IsServer) { newOrder = null;  return; }
         print("AddNewRandomOrder");
 
         int randomIdx = (int)(UnityEngine.Random.value) * int.MaxValue % this._targetDishes.Length;
-        ICombinableSO newRandomTargetDish = this._targetDishes[randomIdx];
+        ICombinableSO newRandomTargetDish = this._targetDishes[randomIdx].Value;
         double newOrderWarningTime = ServerGameManager.CurGameTime + this._orderWarningTime;
         double newOrderOverdueTime = ServerGameManager.CurGameTime + this._orderOverdueTime;
 
@@ -82,7 +144,8 @@ public class ServerGameManager: NetworkBehaviour{
         this._client.GameStateChangeCallbackClientRpc(newRandomTargetDish.StrKey, 0, 0, GameStateChangeCallbackID.OnNewOrder);
     }
 
-    private void OnDishOut(object sender, DishOutEventArgs args){
+    private void OnDishOut(object sender, DishOutEventArgs args)
+    {
         if (!this.IsServer) return;
 
         Order matchingOrder = this._existingOrders.Find(order => order.RequestedDish == args.Dish);
@@ -101,6 +164,11 @@ public class ServerGameManager: NetworkBehaviour{
 
     void FixedUpdate(){
         if (!this.IsServer | !ServerGameManager.IsGameStarted) return;
+
+        if (ServerGameManager.CurGameTime >= ServerGameManager._gameDuration.Value) {
+            this.GameEnd();
+            return;
+        }
 
         // check if any order warning/overdue
         foreach (Order curOrder in this._existingOrders){

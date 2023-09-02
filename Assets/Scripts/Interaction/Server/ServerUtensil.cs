@@ -18,18 +18,18 @@ internal class ServerUtensil : ServerInteractable, IServerGrabbable, IServerHold
 	private static readonly ulong GRABBED_CLIENT_ID_DEFAULT = ulong.MaxValue;
 
 
-	IHolderSO IServerHolder.Info => (IHolderSO)base._info;
-	IGrabbableSO IServerGrabbable.Info => (IGrabbableSO)base._info;
+	IHolderSO IServerHolder.Info => (IHolderSO)base._info.Value;
+	IGrabbableSO IServerGrabbable.Info => (IGrabbableSO)base._info.Value;
 	bool IServerGrabbable.IsGrabbedByPlayer => this.grabDropControl.IsGrabbedByPlayer;
 	bool IServerGrabbable.IsGrabbedByLocal => this.grabDropControl.IsGrabbedByPlayer;
-	bool IServerGrabbable.CanPlaceOn(IServerHolder targetHolder) => ((IGrabbableSO)base._info).CanPlaceOn(targetHolder.Info);
+	bool IServerGrabbable.CanPlaceOn(IServerHolder targetHolder) => ((IGrabbableSO)base._info.Value).CanPlaceOn(targetHolder.Info);
 	ulong IServerHolder.OwnerClientId => this.OwnerClientId;
 	bool IServerHolder.IsHoldingGrabbable => this.holdTakeControl.IsHoldingGrabbable;
 	IServerGrabbable IServerHolder.HoldGrabbable => this._holdGrabbable;
 
 
-	public event EventHandler<GrabDropEventArgs> OnGrab;
-	public event EventHandler<GrabDropEventArgs> OnDrop;
+	public event EventHandler<ServerGrabDropEventArgs> OnGrab;
+	public event EventHandler<ServerGrabDropEventArgs> OnDrop;
 	public event EventHandler<HoldTakeEventArgs> OnHold;
 	public event EventHandler<HoldTakeEventArgs> OnTake;
 
@@ -52,10 +52,10 @@ internal class ServerUtensil : ServerInteractable, IServerGrabbable, IServerHold
 			grabDropInitArgs.AddGrabbedClientDefault(GRABBED_CLIENT_ID_DEFAULT);
 			this.grabDropControl.OnGrab += (sender, args) => { this.OnGrab?.Invoke(sender, args); };
 			this.grabDropControl.OnGrab += (sender, args) =>
-			{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnGrab, args.TargetHolderInfo.StrKey); };
+			{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnGrab, args.GrabbableInfo.StrKey); };
 			this.grabDropControl.OnDrop += (sender, args) => { this.OnDrop?.Invoke(sender, args); };
 			this.grabDropControl.OnDrop += (sender, args) =>
-			{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnDrop, args.TargetHolderInfo.StrKey); };
+			{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnDrop, args.GrabbableInfo.StrKey); };
 			this.grabDropControl.DepsInit(grabDropInitArgs);
 		}
 

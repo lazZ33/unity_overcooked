@@ -49,7 +49,7 @@ public class ClientGameUI : NetworkBehaviour
 
 		dishImageHolder.style.backgroundImage = new StyleBackground(dishImage);
 
-        foreach (CombinableSO requiredCombinable in args.RequestedDish.RequiredCombinables){
+        foreach (ICombinableSO requiredCombinable in args.RequestedDish.RequiredCombinables){
             TemplateContainer newRecipeImageItemVisual = this._recipeImageListItemTemplate.CloneTree();
 
             newRecipeImageItemVisual.style.backgroundImage = new StyleBackground(requiredCombinable.DisplaySprite);

@@ -5,6 +5,10 @@ using System.Collections.Generic;
 
 public interface IInteractableSO
 {
+	public Mesh Mesh { get; }
+	public Mesh MeshCollider { get; }
+	public Material Material { get; }
+
 	public string StrKey { get; }
 
 	protected static Dictionary<string, IInteractableSO> _existingInteractable = new Dictionary<string, IInteractableSO>();

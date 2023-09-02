@@ -7,7 +7,7 @@ using UnityEngine;
 using GrabDropInitArgs = ServerGrabDropControl.GrabDropControlInitArgs;
 using CombineInitArgs = ServerCombineControl.CombineControlInitArgs;
 
-internal class ServerIngredient: ServerInteractable, IServerCombinable, IServerGrabbable
+internal class ServerIngredient: ServerInteractable, IServerCombinable
 {
 	[SerializeField] private ServerGrabDropControl grabDropControl;
 	[SerializeField] private ServerCombineControl combineControl;
@@ -16,8 +16,8 @@ internal class ServerIngredient: ServerInteractable, IServerCombinable, IServerG
 	// DI variable
 	private NetworkVariable<ulong> _grabbedClientId = new NetworkVariable<ulong>(GRABBED_CLIENT_ID_DEFAULT);
 	private static readonly ulong GRABBED_CLIENT_ID_DEFAULT = ulong.MaxValue;
-	public event EventHandler<GrabDropEventArgs> OnGrab;
-	public event EventHandler<GrabDropEventArgs> OnDrop;
+	public event EventHandler<ServerGrabDropEventArgs> OnGrab;
+	public event EventHandler<ServerGrabDropEventArgs> OnDrop;
 	public event EventHandler<CombineEventArgs> OnCombine;
 
 
@@ -47,10 +47,10 @@ internal class ServerIngredient: ServerInteractable, IServerCombinable, IServerG
 			grabDropInitArgs.AddGrabbedClientDefault(GRABBED_CLIENT_ID_DEFAULT);
 			this.grabDropControl.OnGrab += (sender, args) => { this.OnGrab?.Invoke(sender, args); };
 			this.grabDropControl.OnGrab += (sender, args) =>
-				{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnGrab, args.TargetHolderInfo.StrKey); };
+				{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnGrab, args.GrabbableInfo.StrKey); };
 			this.grabDropControl.OnDrop += (sender, args) => { this.OnDrop?.Invoke(sender, args); };
 			this.grabDropControl.OnDrop += (sender, args) =>
-				{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnDrop, args.TargetHolderInfo?.StrKey); };
+				{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnDrop, args.GrabbableInfo?.StrKey); };
 			this.grabDropControl.DepsInit(grabDropInitArgs);
 		}
 
