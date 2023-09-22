@@ -1,7 +1,6 @@
 using System;
 
-public interface IClientUsable : IClientInteractable
-{
+public interface IClientUsable: IClientInteractable {
 	public new IConverterSO Info { get; }
 
 

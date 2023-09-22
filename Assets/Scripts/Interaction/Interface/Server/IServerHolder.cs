@@ -1,8 +1,7 @@
 using System;
 using Unity;
 
-public interface IServerHolder: IServerInteractable
-{
+public interface IServerHolder: IServerInteractable {
 	public new IHolderSO Info { get; }
 	public bool IsHoldingGrabbable { get; }
 	public IServerGrabbable HoldGrabbable { get; }

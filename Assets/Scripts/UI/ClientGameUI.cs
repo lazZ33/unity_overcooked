@@ -8,7 +8,8 @@ public class ClientGameUI : NetworkBehaviour
     [SerializeField] private UIDocument _gameUI;
     [SerializeField] private VisualTreeAsset _orderListItemTemplate;
     [SerializeField] private VisualTreeAsset _recipeImageListItemTemplate;
-    [SerializeField] private ClientGameManager _gameManager;
+    [SerializeField] private ClientOrderManager _orderManager;
+    [SerializeField] private ClientScoreManager _scoreManager;
     [SerializeField] private string _scoreLabelName;
     [SerializeField] private string _timeLabelName;
     [SerializeField] private string _orderListName;
@@ -24,14 +25,14 @@ public class ClientGameUI : NetworkBehaviour
         this._timerText = this._gameUI.rootVisualElement.Q<Label>(this._timeLabelName);
         this._orderList = this._gameUI.rootVisualElement.Q<ScrollView>(this._orderListName);
 
-		this._gameManager.OnScoreChange += this.OnScoreChange;
-        this._gameManager.OnNewOrder += this.OnNewOrder;
+		this._scoreManager.OnScoreChange += this.OnScoreChange;
+        this._orderManager.OnNewOrder += this.OnNewOrder;
 
-        this._timerText.text = ((int)(ServerGameManager.TimeLeft / 60)).ToString() + ": " + ((int)(ServerGameManager.TimeLeft % 60)).ToString();
+        this._timerText.text = ((int)(ServerGameTimer.CurrentGameTime / 60)).ToString() + ": " + ((int)(ServerGameTimer.CurrentGameTime % 60)).ToString();
     }
 
     void FixedUpdate(){
-        this._timerText.text = ((int)(ServerGameManager.TimeLeft / 60)).ToString() + ": " + ((int)(ServerGameManager.TimeLeft % 60)).ToString();
+        this._timerText.text = ((int)(ServerGameTimer.CurrentGameTime / 60)).ToString() + ": " + ((int)(ServerGameTimer.CurrentGameTime % 60)).ToString();
     }
 
     void OnScoreChange(object sender, ScoreChangeEventArgs args) {

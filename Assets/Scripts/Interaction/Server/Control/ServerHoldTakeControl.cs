@@ -2,8 +2,7 @@ using System;
 using Unity;
 using UnityEngine;
 
-internal class ServerHoldTakeControl : ServerInteractControl
-{
+internal class ServerHoldTakeControl: ServerInteractControl {
 	// shared dependencies to be injected
 	internal delegate IServerGrabbable GetHoldGrabbableFunc();
 	internal delegate void SetHoldGrabbableFunc(IServerGrabbable holdGrabbable);
@@ -18,42 +17,38 @@ internal class ServerHoldTakeControl : ServerInteractControl
 
 
 	internal bool IsHoldingGrabbable => this._holdGrabbable != null;
-	
-	
+
+
 	// builder DI
-	internal class HoldTakeControlInitArgs: InteractControlInitArgs
-	{
+	internal class HoldTakeControlInitArgs: InteractControlInitArgs {
 		internal HoldTakeControlInitArgs() { }
 		internal GetHoldGrabbableFunc GetHoldGrabbableFunc;
 		internal SetHoldGrabbableFunc SetHoldGrabbableFunc;
 		internal void AddGetHoldGrabbableFunc(GetHoldGrabbableFunc getHoldGrabbableFunc) => this.GetHoldGrabbableFunc = getHoldGrabbableFunc;
 		internal void AddSetHoldGrabbableFunc(SetHoldGrabbableFunc setHoldGrabbableFunc) => this.SetHoldGrabbableFunc = setHoldGrabbableFunc;
 	}
-	internal void DepsInit(HoldTakeControlInitArgs args)
-	{
+	internal void DepsInit(HoldTakeControlInitArgs args) {
 		base.DepsInit(args);
 		this._getHoldGrabbable = args.GetHoldGrabbableFunc;
 		this._setHoldGrabbable = args.SetHoldGrabbableFunc;
 	}
 
 
-	protected override void Start()
-	{
+	protected override void Start() {
 		base.Start();
 
 		if (this._getHoldGrabbable == null || this._setHoldGrabbable == null)
 			throw new MissingReferenceException(String.Format("holdTake control not properly initialized before Start(), parent instance: {0}", this._parentInstance));
 	}
 
-	internal void OnHoldServerInternal(IServerGrabbable targetGrabbable)
-	{
-		if (this.IsHoldingGrabbable) return;
+	internal void OnHoldServerInternal(IServerGrabbable targetGrabbable) {
+		if (this.IsHoldingGrabbable)
+			return;
 
 		this._holdGrabbable = targetGrabbable;
 	}
 
-	internal void OnTakeServerInternal(out IServerGrabbable takenGrabbable)
-	{
+	internal void OnTakeServerInternal(out IServerGrabbable takenGrabbable) {
 		if (!this.IsHoldingGrabbable) { Debug.LogError("OnTakeServerInternal called while not holding any grabbable"); takenGrabbable = null; return; }
 
 		takenGrabbable = this._holdGrabbable;

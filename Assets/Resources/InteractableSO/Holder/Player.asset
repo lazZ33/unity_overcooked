@@ -16,7 +16,7 @@ MonoBehaviour:
   _meshCollider: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
   _material: {fileID: 0}
   _localPlacePosition: {x: 0, y: 0.5, z: 0.9}
-  _localPlaceRotation: {x: 0, y: 0, z: 0, w: 0}
+  _localPlaceRotation: {x: 0, y: 0, z: 0, w: 1}
   _bindingHolder:
     mode: 0
     unityReference: {fileID: 0}

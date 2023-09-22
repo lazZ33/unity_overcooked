@@ -1,14 +1,13 @@
 using System;
 
-public interface IServerConverter: IServerInteractable
-{
+public interface IServerConverter: IServerInteractable {
 	public new IConverterSO Info { get; }
 
 
-	public event EventHandler<ServerUseEventArgs> OnConvertStart;
-	public event EventHandler<ServerUseEventArgs> OnConverting;
-	public event EventHandler<ServerUseEventArgs> OnConvertEnd;
-	public event EventHandler<ServerUseEventArgs> OnConvert;
+	public event EventHandler<ServerConvertEventArgs> OnConvertStart;
+	public event EventHandler<ServerConvertEventArgs> OnConverting;
+	public event EventHandler<ServerConvertEventArgs> OnConvertEnd;
+	public event EventHandler<ServerConvertEventArgs> OnConvert;
 
 
 	public bool IsHoldToConvert { get; }

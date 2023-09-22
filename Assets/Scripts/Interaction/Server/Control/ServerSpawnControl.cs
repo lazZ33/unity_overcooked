@@ -5,10 +5,9 @@ using Unity.Collections;
 using UnityEngine;
 using Unity.Netcode;
 
-internal class ServerSpawnControl : ServerInteractControl
-{
-    [SerializeField] private GameObject _grabbablePrefab;
-    internal IGrabbableSO SpawnningGrabbableInfo;
+internal class ServerSpawnControl: ServerInteractControl {
+	[SerializeField] private GameObject _grabbablePrefab;
+	internal IGrabbableSO SpawnningGrabbableInfo;
 
 	// shared dependencies to be injected
 	private new ISpawnerSO _info { get { return (ISpawnerSO)base._info; } }
@@ -21,23 +20,20 @@ internal class ServerSpawnControl : ServerInteractControl
 	private EventHandler _onMapDespawn;
 
 	// builder DI
-	internal class SpawnControlInitArgs: InteractControlInitArgs
-	{
+	internal class SpawnControlInitArgs: InteractControlInitArgs {
 		internal SpawnControlInitArgs() { }
 	}
-	internal override void DepsInit(InteractControlInitArgs args)
-	{
+	internal override void DepsInit(InteractControlInitArgs args) {
 		base.DepsInit(args);
 	}
 
 
-	internal void OnMapDespawn()
-	{
+	internal void OnMapDespawn() {
 		this._onMapDespawn?.Invoke(this, EventArgs.Empty);
 	}
-	internal IServerGrabbable OnSpawnServerInternal(){
-        // spawn target object
-        GameObject newGrabbableObject = Instantiate(this._grabbablePrefab, this._info.SpawnningPosition, this._info.SpawnningRotation);
+	internal IServerGrabbable OnSpawnServerInternal() {
+		// spawn target object
+		GameObject newGrabbableObject = Instantiate(this._grabbablePrefab, this._info.SpawnningPosition, this._info.SpawnningRotation);
 		IServerGrabbable newGrabbableControl = newGrabbableObject.GetComponent<IServerGrabbable>();
 		newGrabbableControl.NetworkObjectBuf.Spawn(true);
 		newGrabbableControl.SetInfoServerInternal(this.SpawnningGrabbableInfo);
@@ -45,7 +41,7 @@ internal class ServerSpawnControl : ServerInteractControl
 		// setup despawn callback
 		this._onMapDespawn += (object sender, EventArgs args) => newGrabbableControl.NetworkObjectBuf.Despawn();
 
-        this.OnSpawn?.Invoke(this._parentInstance, new SpawnEventArgs(newGrabbableControl.Info));
-        return newGrabbableControl;
-    }
+		this.OnSpawn?.Invoke(this._parentInstance, new SpawnEventArgs(newGrabbableControl.Info));
+		return newGrabbableControl;
+	}
 }

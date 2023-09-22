@@ -6,10 +6,9 @@ using System;
 using HoldTakeInitArgs = ServerHoldTakeControl.HoldTakeControlInitArgs;
 using SpawnInitArgs = ServerSpawnControl.SpawnControlInitArgs;
 
-internal class ServerSpawner : ServerInteractable, IServerHolder, IServerSpawner
-{
-	[SerializeField] private ServerHoldTakeControl holdTakeControl;
-	[SerializeField] private ServerSpawnControl spawnControl;
+internal class ServerSpawner: ServerInteractable, IServerHolder, IServerSpawner {
+	[SerializeField] private ServerHoldTakeControl _holdTakeControl;
+	[SerializeField] private ServerSpawnControl _spawnControl;
 
 
 	// DI variables
@@ -18,19 +17,17 @@ internal class ServerSpawner : ServerInteractable, IServerHolder, IServerSpawner
 	public event EventHandler<HoldTakeEventArgs> OnHold;
 	public event EventHandler<HoldTakeEventArgs> OnTake;
 
-	ISpawnerSO IServerSpawner.Info => (ISpawnerSO) base._info.Value;
-	IHolderSO IServerHolder.Info => (IHolderSO) base._info.Value;
+	ISpawnerSO IServerSpawner.Info => (ISpawnerSO)base._info.Value;
+	IHolderSO IServerHolder.Info => (IHolderSO)base._info.Value;
 	ulong IServerHolder.OwnerClientId => base.OwnerClientId;
-	bool IServerHolder.IsHoldingGrabbable => this.holdTakeControl.IsHoldingGrabbable;
+	bool IServerHolder.IsHoldingGrabbable => this._holdTakeControl.IsHoldingGrabbable;
 	IServerGrabbable IServerHolder.HoldGrabbable => this._holdGrabbable;
 
 
-	protected override void Awake()
-	{
+	protected override void Awake() {
 		base.Awake();
 
-		if (this.holdTakeControl == null || this.spawnControl == null)
-		{
+		if (this._holdTakeControl == null || this._spawnControl == null) {
 			throw new NullReferenceException("null controller detected");
 		}
 
@@ -41,13 +38,11 @@ internal class ServerSpawner : ServerInteractable, IServerHolder, IServerSpawner
 			holdTakeInitArgs.AddGetInfoFunc(() => { return base.Info; });
 			holdTakeInitArgs.AddGetHoldGrabbableFunc(() => { return this._holdGrabbable; });
 			holdTakeInitArgs.AddSetHoldGrabbableFunc((IServerGrabbable holdGrabbable) => { this._holdGrabbable = holdGrabbable; });
-			this.holdTakeControl.OnHold += (sender, args) => { this.OnHold?.Invoke(sender, args); };
-			this.holdTakeControl.OnHold += (sender, args) =>
-				{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnHold, args.TargetGrabbableInfo.StrKey); };
-			this.holdTakeControl.OnTake += (sender, args) => { this.OnTake?.Invoke(sender, args); };
-			this.holdTakeControl.OnTake += (sender, args) =>
-				{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnTake, args.TargetGrabbableInfo.StrKey); };
-			this.holdTakeControl.DepsInit(holdTakeInitArgs);
+			this._holdTakeControl.OnHold += (sender, args) => { this.OnHold?.Invoke(sender, args); };
+			this._holdTakeControl.OnHold += (sender, args) => { base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnHold, args.TargetGrabbableInfo.StrKey); };
+			this._holdTakeControl.OnTake += (sender, args) => { this.OnTake?.Invoke(sender, args); };
+			this._holdTakeControl.OnTake += (sender, args) => { base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnTake, args.TargetGrabbableInfo.StrKey); };
+			this._holdTakeControl.DepsInit(holdTakeInitArgs);
 		}
 
 		// spawn control DI
@@ -55,31 +50,32 @@ internal class ServerSpawner : ServerInteractable, IServerHolder, IServerSpawner
 			SpawnInitArgs spawnInitArgs = new SpawnInitArgs();
 			spawnInitArgs.AddParentInstance(this);
 			spawnInitArgs.AddGetInfoFunc(() => { return this.Info; });
-			this.spawnControl.OnSpawn += (sender, args) => { this.OnSpawn?.Invoke(sender, args); };
-			this.spawnControl.OnSpawn += (sender, args) =>
-				{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnSpawn, args.SpawnedGrabbableInfo.StrKey); };
-			this.spawnControl.DepsInit(spawnInitArgs);
+			this._spawnControl.OnSpawn += (sender, args) => { this.OnSpawn?.Invoke(sender, args); };
+			this._spawnControl.OnSpawn += (sender, args) => { base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnSpawn, args.SpawnedGrabbableInfo.StrKey); };
+			this._spawnControl.DepsInit(spawnInitArgs);
 		}
 	}
 
-	public override void OnMapDespawn(object sender, EventArgs args)
-	{
+	public override void OnMapDespawn(object sender, EventArgs args) {
 		base.OnMapDespawn(sender, args);
-		this.spawnControl.OnMapDespawn();
+		this._spawnControl.OnMapDespawn();
 	}
 
-	public void SpawnningGrabbableInfoInit(IGrabbableSO info)
-	{
-		if (this.IsSpawned)
-		{
+	public void SpawnningGrabbableInfoInit(IGrabbableSO info) {
+		if (this.IsSpawned) {
 			Debug.LogError("Attempt to initialize spawnning grabbable info after an object have network spawned");
 			return;
 		}
 
-		this.spawnControl.SpawnningGrabbableInfo = info;
+		this._spawnControl.SpawnningGrabbableInfo = info;
 	}
 
-	IServerGrabbable IServerSpawner.OnSpawnServerInternal() => this.spawnControl.OnSpawnServerInternal();
-	void IServerHolder.OnHoldServerInternal(IServerGrabbable targetGrabbable) => this.holdTakeControl.OnHoldServerInternal(targetGrabbable);
-	void IServerHolder.OnTakeServerInternal(out IServerGrabbable takenGrabbable) => this.holdTakeControl.OnTakeServerInternal(out takenGrabbable);
+	public override void OnMapUpdate() {
+		this._holdTakeControl.OnMapUpdate();
+		this._spawnControl.OnMapUpdate();
+	}
+
+	IServerGrabbable IServerSpawner.OnSpawnServerInternal() => this._spawnControl.OnSpawnServerInternal();
+	void IServerHolder.OnHoldServerInternal(IServerGrabbable targetGrabbable) => this._holdTakeControl.OnHoldServerInternal(targetGrabbable);
+	void IServerHolder.OnTakeServerInternal(out IServerGrabbable takenGrabbable) => this._holdTakeControl.OnTakeServerInternal(out takenGrabbable);
 }

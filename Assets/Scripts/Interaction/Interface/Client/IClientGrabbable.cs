@@ -3,8 +3,7 @@ using Unity;
 using Unity.Netcode;
 using UnityEngine;
 
-public interface IClientGrabbable : IClientInteractable
-{
+public interface IClientGrabbable: IClientInteractable {
 	public new IGrabbableSO Info { get; }
 
 	public event EventHandler<ClientGrabDropEventArgs> OnGrab;

@@ -6,8 +6,7 @@ using System.Collections.Generic;
 using TNRD;
 using System.Runtime.CompilerServices;
 
-public interface ICombinableSO: IGrabbableSO
-{
+public interface ICombinableSO: IGrabbableSO {
 	protected HashSet<ICombinableSO> _existingCombinableTo { get; }
 	protected ICombinableSO[] _combinableTo { get; }
 	public ICombinableSO[] RequiredCombinables { get; }
@@ -21,11 +20,10 @@ public interface ICombinableSO: IGrabbableSO
 
 
 	public bool IsFinalCombinable { get; }
-	public bool IsBaseCombinable
-	{
-		get
-		{
-			if (this.RequiredCombinables != null) return (this.RequiredCombinables.Length == 0 && this._requiredConverter == null);
+	public bool IsBaseCombinable {
+		get {
+			if (this.RequiredCombinables != null)
+				return (this.RequiredCombinables.Length == 0 && this._requiredConverter == null);
 			return true;
 		}
 	}
@@ -34,25 +32,22 @@ public interface ICombinableSO: IGrabbableSO
 	public static ICombinableSO GetNextSO(ICombinableSO combinable1, IConverterSO converter) => GetSO(GetNextSOStrKey(combinable1, converter));
 	public static ICombinableSO TryGetNextSO(ICombinableSO combinable1, ICombinableSO combinable2) => TryGetSO(GetNextSOStrKey(combinable1, combinable2));
 	public static ICombinableSO TryGetNextSO(ICombinableSO combinable1, IConverterSO converter) => TryGetSO(GetNextSOStrKey(combinable1, converter));
-	public new static ICombinableSO GetSO(string strKey) => (ICombinableSO) IInteractableSO.GetSO(strKey);
-	public new static ICombinableSO TryGetSO(string strKey) => (ICombinableSO) IInteractableSO.TryGetSO(strKey);
+	public new static ICombinableSO GetSO(string strKey) => (ICombinableSO)IInteractableSO.GetSO(strKey);
+	public new static ICombinableSO TryGetSO(string strKey) => (ICombinableSO)IInteractableSO.TryGetSO(strKey);
 
-	private static string GetNextSOStrKey(ICombinableSO CombinableInfo1, ICombinableSO CombinableInfo2)
-	{
+	private static string GetNextSOStrKey(ICombinableSO CombinableInfo1, ICombinableSO CombinableInfo2) {
 		List<string> strList = new List<string>(CombinableInfo1.StrKeyList) { CombinableInfo2.StrKey };
 		strList.Sort();
 		return String.Concat(strList);
 	}
-	private static string GetNextSOStrKey(ICombinableSO CombinableInfo, IConverterSO converterInfo)
-	{
+	private static string GetNextSOStrKey(ICombinableSO CombinableInfo, IConverterSO converterInfo) {
 		List<string> strList = new List<string>(CombinableInfo.StrKeyList) { converterInfo.StrKey };
 		strList.Sort();
 		return String.Concat(strList);
 	}
 
 
-	public static void LoadAllRequiredSO(IEnumerable<ICombinableSO> providedCombinables, List<IConverterSO> providedConverters)
-	{
+	public static void LoadAllRequiredSO(IEnumerable<ICombinableSO> providedCombinables, List<IConverterSO> providedConverters) {
 
 		InteractableSO.LoadAllSO();
 
@@ -61,19 +56,16 @@ public interface ICombinableSO: IGrabbableSO
 		HashSet<ICombinableSO> curCombinableSet = new HashSet<ICombinableSO>();
 		HashSet<ICombinableSO> tempCombinableSetBuffer;
 		HashSet<ICombinableSO> existingCombinableSet = new HashSet<ICombinableSO>();
-		foreach (ICombinableSO curCombinableSO in providedCombinables)
-		{
+		foreach (ICombinableSO curCombinableSO in providedCombinables) {
 			// clear previous relationships, insert initial ICombinableSO
 			curCombinableSO._existingCombinableTo.Clear();
 
 			newCombinableSet.Add(curCombinableSO);
 		}
 
-		while (newCombinableSet.Count != 0)
-		{
+		while (newCombinableSet.Count != 0) {
 			// update current looping list
-			foreach (ICombinableSO newCombinable in newCombinableSet)
-			{
+			foreach (ICombinableSO newCombinable in newCombinableSet) {
 				existingCombinableSet.Add(newCombinable);
 				IInteractableSO._existingInteractable.Add(newCombinable.StrKey, newCombinable);
 			}
@@ -83,20 +75,18 @@ public interface ICombinableSO: IGrabbableSO
 			curCombinableSet = tempCombinableSetBuffer;
 
 			// checking and updating relationships
-			foreach (ICombinableSO curCombinable1 in curCombinableSet)
-			{
+			foreach (ICombinableSO curCombinable1 in curCombinableSet) {
 				ICombinableSO newCombinable;
 
-				foreach (IConverterSO curConverter in providedConverters)
-				{
+				foreach (IConverterSO curConverter in providedConverters) {
 					newCombinable = TryGetSO(GetNextSOStrKey(curCombinable1, curConverter));
-					if (newCombinable == null) continue;
+					if (newCombinable == null)
+						continue;
 
 					newCombinableSet.Add(newCombinable);
 
 					// TODO: can avoid reflection?
-					switch (curConverter.GetType())
-					{
+					switch (curConverter.GetType()) {
 						case IHolderSO curHolderConverter:
 							curCombinable1._existingPlaceableTo.Add(curHolderConverter);
 							if (curCombinable1.CanPlaceOn(curHolderConverter.BindingHolder))
@@ -106,13 +96,12 @@ public interface ICombinableSO: IGrabbableSO
 				}
 
 				// loop between combinables from curCombinableSet and existingCombinableSet
-				foreach (ICombinableSO curCombinable2 in existingCombinableSet)
-				{
+				foreach (ICombinableSO curCombinable2 in existingCombinableSet) {
 
-					if (!curCombinable1._combinableTo.Contains(curCombinable2)) continue;
+					if (!curCombinable1._combinableTo.Contains(curCombinable2))
+						continue;
 					curCombinable1._existingCombinableTo.Add(curCombinable2);
-					if (!curCombinable2._combinableTo.Contains(curCombinable1))
-					{
+					if (!curCombinable2._combinableTo.Contains(curCombinable1)) {
 						Debug.LogError(String.Format("Combinable {0} and {1} not bidirectionally combinable, assuming it is. Combinable missing reference in _combinableTo: {1} ", curCombinable1.name, curCombinable2.name));
 						curCombinable2._existingCombinableTo.Add(curCombinable1);
 					}
@@ -125,14 +114,13 @@ public interface ICombinableSO: IGrabbableSO
 				}
 
 				// loop between 2 combinables from curCombinableSet
-				foreach (ICombinableSO curCombinable2 in curCombinableSet)
-				{
+				foreach (ICombinableSO curCombinable2 in curCombinableSet) {
 					//Debug.Log(curCombinable1.name + " " + curCombinable2);
 
-					if (!curCombinable1._combinableTo.Contains(curCombinable2)) continue;
+					if (!curCombinable1._combinableTo.Contains(curCombinable2))
+						continue;
 					curCombinable1._existingCombinableTo.Add(curCombinable2);
-					if (!curCombinable2._combinableTo.Contains(curCombinable1))
-					{
+					if (!curCombinable2._combinableTo.Contains(curCombinable1)) {
 						Debug.LogError(String.Format("Combinable {0} and {1} not bidirectionally combinable, assuming it is. Combinable missing reference in _combinableTo: {1} ", curCombinable1.name, curCombinable2.name));
 						curCombinable2._existingCombinableTo.Add(curCombinable1);
 					}
@@ -151,10 +139,8 @@ public interface ICombinableSO: IGrabbableSO
 		HelperFunc.LogEnumerable("_existingInteractable", _existingInteractable.Values);
 	}
 
-	public static void GetRequiredBaseSO(IEnumerable<ICombinableSO> targetCombinables, out List<ICombinableSO> requiredBaseCombinables, out List<IConverterSO> requiredConverters)
-	{
-		if (targetCombinables.All(e => e.IsBaseCombinable))
-		{
+	public static void GetRequiredBaseSO(IEnumerable<ICombinableSO> targetCombinables, out List<ICombinableSO> requiredBaseCombinables, out List<IConverterSO> requiredConverters) {
+		if (targetCombinables.All(e => e.IsBaseCombinable)) {
 			requiredBaseCombinables = new List<ICombinableSO>(targetCombinables);
 			requiredConverters = new List<IConverterSO>(0);
 			return;
@@ -166,8 +152,7 @@ public interface ICombinableSO: IGrabbableSO
 		HashSet<ICombinableSO> existingCombinableSet = new HashSet<ICombinableSO>();
 		HashSet<IConverterSO> existingUsableHolderSet = new HashSet<IConverterSO>();
 		HashSet<ICombinableSO> tempCombinableSetBuffer;
-		foreach (ICombinableSO curCombinable in targetCombinables)
-		{
+		foreach (ICombinableSO curCombinable in targetCombinables) {
 			// clear previous relationships, insert initial ICombinableSO
 			curCombinable._existingCombinableTo.Clear();
 			newCombinableSet.Add(curCombinable);
@@ -175,21 +160,20 @@ public interface ICombinableSO: IGrabbableSO
 				existingUsableHolderSet.Add(curCombinable._requiredConverter);
 		}
 
-		while (newCombinableSet.Count != 0)
-		{
+		while (newCombinableSet.Count != 0) {
 			// update cur looping list
 			curCombinableSet.Clear();
-			foreach (ICombinableSO newCombinable in newCombinableSet) existingCombinableSet.Add(newCombinable);
+			foreach (ICombinableSO newCombinable in newCombinableSet)
+				existingCombinableSet.Add(newCombinable);
 			tempCombinableSetBuffer = curCombinableSet;
 			curCombinableSet = newCombinableSet;
 			newCombinableSet = tempCombinableSetBuffer;
 
 			// checking and updating relationships
-			foreach (ICombinableSO curCombinable in curCombinableSet)
-			{
-				if (curCombinable.IsBaseCombinable) continue;
-				foreach (ICombinableSO containedCombinable in curCombinable.RequiredCombinables)
-				{
+			foreach (ICombinableSO curCombinable in curCombinableSet) {
+				if (curCombinable.IsBaseCombinable)
+					continue;
+				foreach (ICombinableSO containedCombinable in curCombinable.RequiredCombinables) {
 					newCombinableSet.Add(containedCombinable);
 					if (curCombinable._requiredConverter != null)
 						existingUsableHolderSet.Add(curCombinable._requiredConverter);

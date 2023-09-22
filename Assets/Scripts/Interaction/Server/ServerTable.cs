@@ -4,9 +4,8 @@ using UnityEngine;
 
 using HoldTakeInitArgs = ServerHoldTakeControl.HoldTakeControlInitArgs;
 
-internal class ServerTable : ServerInteractable, IServerHolder
-{
-	[SerializeField] private ServerHoldTakeControl holdTakeControl;
+internal class ServerTable: ServerInteractable, IServerHolder {
+	[SerializeField] private ServerHoldTakeControl _holdTakeControl;
 
 	// DI variables
 	private IServerGrabbable _holdGrabbable = null;
@@ -15,19 +14,17 @@ internal class ServerTable : ServerInteractable, IServerHolder
 	IHolderSO IServerHolder.Info => (IHolderSO)base._info.Value;
 	ulong IServerHolder.OwnerClientId => this.OwnerClientId;
 	IServerGrabbable IServerHolder.HoldGrabbable => this._holdGrabbable;
-	bool IServerHolder.IsHoldingGrabbable => this.holdTakeControl.IsHoldingGrabbable;
+	bool IServerHolder.IsHoldingGrabbable => this._holdTakeControl.IsHoldingGrabbable;
 
 
 	public event EventHandler<HoldTakeEventArgs> OnHold;
 	public event EventHandler<HoldTakeEventArgs> OnTake;
 
 
-	protected override void Awake()
-	{
+	protected override void Awake() {
 		base.Awake();
 
-		if (this.holdTakeControl == null)
-		{
+		if (this._holdTakeControl == null) {
 			throw new NullReferenceException("null controller detected");
 		}
 
@@ -38,17 +35,18 @@ internal class ServerTable : ServerInteractable, IServerHolder
 			holdTakeInitArgs.AddGetInfoFunc(() => this.Info);
 			holdTakeInitArgs.AddGetHoldGrabbableFunc(() => this._holdGrabbable);
 			holdTakeInitArgs.AddSetHoldGrabbableFunc((IServerGrabbable holdGrabbable) => this._holdGrabbable = holdGrabbable);
-			this.holdTakeControl.OnHold += (sender, args) => { this.OnHold?.Invoke(sender, args); };
-			this.holdTakeControl.OnHold += (sender, args) =>
-				{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnHold, args.TargetGrabbableInfo.StrKey); };
-			this.holdTakeControl.OnTake += (sender, args) => { this.OnTake?.Invoke(sender, args); };
-			this.holdTakeControl.OnTake += (sender, args) =>
-				{ base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnTake, args.TargetGrabbableInfo.StrKey); };
-			holdTakeControl.DepsInit(holdTakeInitArgs);
+			this._holdTakeControl.OnHold += (sender, args) => { this.OnHold?.Invoke(sender, args); };
+			this._holdTakeControl.OnHold += (sender, args) => { base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnHold, args.TargetGrabbableInfo.StrKey); };
+			this._holdTakeControl.OnTake += (sender, args) => { this.OnTake?.Invoke(sender, args); };
+			this._holdTakeControl.OnTake += (sender, args) => { base._client.InteractionEventCallbackClientRpc(InteractionCallbackID.OnTake, args.TargetGrabbableInfo.StrKey); };
+			_holdTakeControl.DepsInit(holdTakeInitArgs);
 		}
 	}
 
+	public override void OnMapUpdate() {
+		this._holdTakeControl.OnMapUpdate();
+	}
 
-	void IServerHolder.OnHoldServerInternal(IServerGrabbable targetGrabbable) => this.holdTakeControl.OnHoldServerInternal(targetGrabbable);
-	void IServerHolder.OnTakeServerInternal(out IServerGrabbable takenGrabbable) => this.holdTakeControl.OnTakeServerInternal(out takenGrabbable);
+	void IServerHolder.OnHoldServerInternal(IServerGrabbable targetGrabbable) => this._holdTakeControl.OnHoldServerInternal(targetGrabbable);
+	void IServerHolder.OnTakeServerInternal(out IServerGrabbable takenGrabbable) => this._holdTakeControl.OnTakeServerInternal(out takenGrabbable);
 }

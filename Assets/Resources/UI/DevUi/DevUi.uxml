@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; align-items: flex-end;">
+        <ui:Button text="Start Host" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Host" style="height: 40px; width: 100px;" />
+        <ui:Button text="Start Client" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Client" style="height: 40px; width: 100px;" />
+        <ui:Button text="Reset Game" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ResetGame" style="height: 40px; width: 100px;" />
+        <ui:Button text="Disconnect" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Disconnect" style="height: 40px; width: 100px;" />
+        <ui:Button text="Game Start" parse-escape-sequences="true" display-tooltip-when-elided="true" name="GameStart" style="height: 40px; width: 100px; margin-top: 20px;" />
+        <ui:Button text="Map Spawn" parse-escape-sequences="true" display-tooltip-when-elided="true" name="MapSpawn" style="height: 40px; width: 100px;" />
+        <ui:Button text="Map Despawn" parse-escape-sequences="true" display-tooltip-when-elided="true" name="MapDespawn" style="height: 40px; width: 100px;" />
+    </ui:VisualElement>
+</ui:UXML>

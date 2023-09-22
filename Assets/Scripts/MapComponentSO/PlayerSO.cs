@@ -5,8 +5,7 @@ using TNRD;
 
 [Serializable]
 [CreateAssetMenu(fileName = "Player", menuName = "ScriptableObject/Player")]
-public class PlayerSO : InteractableSO, IHolderSO
-{
+public class PlayerSO: InteractableSO, IHolderSO {
 	// IHolderSO
 	[SerializeField] private Vector3 _localPlacePosition;
 	public Vector3 LocalPlacePosition => this._localPlacePosition;

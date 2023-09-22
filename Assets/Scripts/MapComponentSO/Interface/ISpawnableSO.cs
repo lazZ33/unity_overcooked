@@ -1,7 +1,6 @@
 
 
 
-public interface ISpawnableSO : IInteractableSO
-{
+public interface ISpawnableSO: IInteractableSO {
 
 }

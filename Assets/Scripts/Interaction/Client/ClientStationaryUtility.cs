@@ -4,8 +4,7 @@ using Unity.Netcode;
 using System;
 using Unity.Collections;
 
-public class ClientStationaryUtility : ClientInteractable, IClientUsable, IClientHolder
-{
+public class ClientStationaryUtility: ClientInteractable, IClientUsable, IClientHolder {
 	private new ServerStationaryUtility _server => (ServerStationaryUtility)base._server;
 	private new StationaryUtilitySO Info => (StationaryUtilitySO)base._info;
 	private new StationaryUtilitySO _info => (StationaryUtilitySO)base._info;

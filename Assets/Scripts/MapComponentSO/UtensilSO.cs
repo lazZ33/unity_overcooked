@@ -6,8 +6,7 @@ using System.Collections.Generic;
 
 [Serializable]
 [CreateAssetMenu(fileName = "Utensil", menuName = "ScriptableObject/Utensil")]
-public class UtensilSO : InteractableSO, IHolderSO, IGrabbableSO
-{
+public class UtensilSO: InteractableSO, IHolderSO, IGrabbableSO {
 	// IHolderSO implementation
 	[SerializeField] private Vector3 _localPlacePosition;
 	public Vector3 LocalPlacePosition => this._localPlacePosition;

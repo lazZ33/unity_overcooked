@@ -4,8 +4,7 @@ using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-public interface IClientInteractable
-{
+public interface IClientInteractable {
 	public IInteractableSO Info { get; }
 
 	public NetworkObjectReference NetworkObjectReferenceBuf { get; }
